@@ -6,7 +6,7 @@ import {
   OpenAIApiPort,
 } from '../port/out/openai-api.port';
 import { FoodAnalysis } from '@food/domain/food-analysis';
-import { S3Service } from '@common/s3/s3.service';
+import { FileStorageService, FILE_STORAGE_SERVICE_TOKEN } from '@common/storage/file-storage.interface';
 import { FoodAnalyzedEvent } from '@food/domain/events/food-analyzed.event';
 import * as sharp from 'sharp';
 
@@ -15,7 +15,8 @@ export class FoodService implements FoodUseCase {
   constructor(
     @Inject(OpenAIApiPortSymbol)
     private readonly openAIApiPort: OpenAIApiPort,
-    private readonly s3Service: S3Service,
+    @Inject(FILE_STORAGE_SERVICE_TOKEN)
+    private readonly fileStorageService: FileStorageService,
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
@@ -27,8 +28,8 @@ export class FoodService implements FoodUseCase {
     // 이미지 압축
     const compressedImage = await this.compressImage(image);
 
-    // S3에 압축된 이미지 업로드
-    const imageUrl = await this.s3Service.uploadFile(compressedImage);
+    // 압축된 이미지 업로드
+    const imageUrl = await this.fileStorageService.uploadFile(compressedImage);
 
     // OpenAI API를 사용하여 음식 분석
     const foodAnalysis = await this.openAIApiPort.analyzeFood(
