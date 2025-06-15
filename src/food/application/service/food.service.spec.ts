@@ -5,7 +5,10 @@ import {
   OpenAIApiPort,
   OpenAIApiPortSymbol,
 } from '../port/out/openai-api.port';
-import { FileStorageService, FILE_STORAGE_SERVICE_TOKEN } from '@common/storage/file-storage.interface';
+import {
+  FileStorageService,
+  FILE_STORAGE_SERVICE_TOKEN,
+} from '@common/storage/file-storage.interface';
 import { FoodAnalysis } from '@food/domain/food-analysis';
 import { FoodAnalyzedEvent } from '@food/domain/events/food-analyzed.event';
 

@@ -26,7 +26,9 @@ export const configValidationSchema = Joi.object({
   USE_MOCK_OPENAI: Joi.alternatives()
     .try(
       Joi.boolean(),
-      Joi.string().valid('true', 'false').custom((value) => value === 'true')
+      Joi.string()
+        .valid('true', 'false')
+        .custom((value) => value === 'true'),
     )
     .default(false),
   OPENAI_API_KEY: Joi.string().when('USE_MOCK_OPENAI', {
