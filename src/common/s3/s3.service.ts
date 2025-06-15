@@ -5,9 +5,10 @@ import {
   PutObjectCommand,
   DeleteObjectCommand,
 } from '@aws-sdk/client-s3';
+import { FileStorageService } from '../storage/file-storage.interface';
 
 @Injectable()
-export class S3Service {
+export class S3Service implements FileStorageService {
   private s3Client: S3Client;
   private bucketName: string;
 
@@ -22,12 +23,12 @@ export class S3Service {
     this.bucketName = this.configService.getOrThrow('AWS_S3_BUCKET_NAME');
   }
 
-  async uploadFile(file: Express.Multer.File): Promise<string> {
-    const key = `${Date.now()}-${file.originalname}`;
+  async uploadFile(file: Express.Multer.File, key?: string): Promise<string> {
+    const fileKey = key || `${Date.now()}-${file.originalname}`;
 
     const command = new PutObjectCommand({
       Bucket: this.bucketName,
-      Key: key,
+      Key: fileKey,
       Body: file.buffer,
       ContentType: file.mimetype,
       ACL: 'public-read',
@@ -35,7 +36,7 @@ export class S3Service {
 
     await this.s3Client.send(command);
 
-    return this.getPublicUrl(key);
+    return this.getPublicUrl(fileKey);
   }
 
   async deleteFile(fileUrl: string): Promise<void> {
