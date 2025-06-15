@@ -9,10 +9,18 @@ export class OpenAIApiAdapter implements OpenAIApiPort {
   private openai: OpenAI;
 
   constructor(private configService: ConfigService) {
+    const apiKey = this.configService.get<string>('openai.apiKey');
+    const orgId = this.configService.get<string>('openai.orgId');
+    const projectId = this.configService.get<string>('openai.projectId');
+
+    if (!apiKey) {
+      throw new Error('OpenAI API key is required when not using mock mode');
+    }
+
     this.openai = new OpenAI({
-      apiKey: this.configService.getOrThrow<string>('OPENAI_API_KEY'),
-      organization: this.configService.getOrThrow<string>('OPENAI_ORG_ID'),
-      project: this.configService.getOrThrow<string>('OPENAI_PROJECT_ID'),
+      apiKey,
+      organization: orgId,
+      project: projectId,
     });
   }
 
