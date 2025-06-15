@@ -18,8 +18,14 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "prisma migrate deploy && jest --verbose --config ./test/jest-e2e.json --runInBand",
-    "test:e2e:all": "prisma migrate deploy && RUN_REAL_API_TESTS=true jest --verbose --config ./test/jest-e2e.json --runInBand"
+    "test:e2e": "prisma migrate deploy && USE_MOCK_OPENAI=true jest --verbose --config ./test/jest-e2e.json --runInBand",
+    "test:e2e:mock": "prisma migrate deploy && USE_MOCK_OPENAI=true jest --verbose --config ./test/jest-e2e.json --runInBand",
+    "test:e2e:integration": "prisma migrate deploy && USE_MOCK_OPENAI=false jest --verbose --config ./test/jest-e2e.json --runInBand --testPathPattern=food",
+    "test:e2e:all": "prisma migrate deploy && RUN_REAL_API_TESTS=true jest --verbose --config ./test/jest-e2e.json --runInBand",
+    "test:food": "jest --verbose --testPathPattern=food",
+    "test:food:unit": "jest --verbose src/food",
+    "test:food:e2e": "prisma migrate deploy && USE_MOCK_OPENAI=true jest --verbose --config ./test/jest-e2e.json --runInBand --testPathPattern=food",
+    "test:food:real": "prisma migrate deploy && USE_MOCK_OPENAI=false jest --verbose --config ./test/jest-e2e.json --runInBand --testPathPattern=food"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.614.0",
@@ -51,7 +57,7 @@
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "prom-client": "^15.1.3",
-    "reflect-metadata": "^0.2.0",
+    "reflect-metadata": "^0.1.14",
     "rxjs": "^7.8.1",
     "sharp": "^0.33.4",
     "uuid": "^10.0.0",
