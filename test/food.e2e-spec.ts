@@ -3,45 +3,21 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { JwtAuthGuard } from '@common/guards/jwt-auth.guard';
-import {
-  FoodUseCase,
-  FOOD_USE_CASE,
-} from '@food/application/port/in/food.use-case';
-import { FoodAnalysis } from '@food/domain/food-analysis';
 import * as path from 'path';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '@common/prisma/prisma.service';
 
 describe('FoodController (e2e)', () => {
   let app: INestApplication;
-  let mockFoodUseCase: Partial<FoodUseCase>;
   let authToken: string;
   let jwtService: JwtService;
   let prismaService: PrismaService;
+  const isMockMode = process.env.USE_MOCK_OPENAI === 'true';
 
   beforeEach(async () => {
-    mockFoodUseCase = {
-      analyzeFoodImage: jest.fn().mockResolvedValue(
-        new FoodAnalysis(['chicken', 'salad'], 350, {
-          chicken: {
-            protein: { amount: 30, unit: 'g', calories: 120 },
-            fat: { amount: 10, unit: 'g', calories: 90 },
-            carbohydrate: { amount: 0, unit: 'g', calories: 0 },
-          },
-          salad: {
-            protein: { amount: 2, unit: 'g', calories: 8 },
-            fat: { amount: 5, unit: 'g', calories: 45 },
-            carbohydrate: { amount: 10, unit: 'g', calories: 40 },
-          },
-        }),
-      ),
-    };
-
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     })
-      .overrideProvider(FOOD_USE_CASE)
-      .useValue(mockFoodUseCase)
       .overrideGuard(JwtAuthGuard)
       .useValue({ canActivate: () => true })
       .compile();
@@ -69,33 +45,84 @@ describe('FoodController (e2e)', () => {
     });
   });
 
-  it('/food/analyze (POST) - successful analysis', () => {
-    const filePath = path.join(__dirname, 'assets', 'mac.png');
+  describe('Food Analysis Tests', () => {
+    if (isMockMode) {
+      it('/food/analyze (POST) - mock: default scenario', () => {
+        const filePath = path.join(__dirname, 'assets', 'mac.png');
 
-    return request(app.getHttpServer())
-      .post('/food/analyze')
-      .set('Authorization', `Bearer ${authToken}`)
-      .attach('image', filePath)
-      .field('description', '치킨 샐러드')
-      .expect(201)
-      .expect((res) => {
-        expect(res.body).toEqual({
-          ingredients: ['chicken', 'salad'],
-          totalCalories: 350,
-          breakdown: {
-            chicken: {
-              protein: { amount: 30, unit: 'g', calories: 120 },
-              fat: { amount: 10, unit: 'g', calories: 90 },
-              carbohydrate: { amount: 0, unit: 'g', calories: 0 },
-            },
-            salad: {
-              protein: { amount: 2, unit: 'g', calories: 8 },
-              fat: { amount: 5, unit: 'g', calories: 45 },
-              carbohydrate: { amount: 10, unit: 'g', calories: 40 },
-            },
-          },
-        });
+        return request(app.getHttpServer())
+          .post('/food/analyze')
+          .set('Authorization', `Bearer ${authToken}`)
+          .attach('image', filePath)
+          .field('description', '건강한 식단')
+          .expect(201)
+          .expect((res) => {
+            expect(res.body.ingredients).toEqual([
+              '닭가슴살',
+              '브로콜리',
+              '현미밥',
+            ]);
+            expect(res.body.totalCalories).toBe(448);
+            expect(res.body.breakdown).toHaveProperty('닭가슴살');
+          });
       });
+
+      it('/food/analyze (POST) - mock: pizza scenario', () => {
+        const filePath = path.join(__dirname, 'assets', 'mac.png');
+
+        return request(app.getHttpServer())
+          .post('/food/analyze')
+          .set('Authorization', `Bearer ${authToken}`)
+          .attach('image', filePath)
+          .field('description', '맛있는 피자')
+          .expect(201)
+          .expect((res) => {
+            expect(res.body.ingredients).toEqual([
+              '피자 도우',
+              '토마토 소스',
+              '모짜렐라 치즈',
+              '페퍼로니',
+            ]);
+            expect(res.body.totalCalories).toBe(854);
+          });
+      });
+
+      it('/food/analyze (POST) - mock: error scenario', () => {
+        const filePath = path.join(__dirname, 'assets', 'mac.png');
+
+        // 에러 테스트 시 콘솔 에러 로그는 정상적인 동작입니다
+        return request(app.getHttpServer())
+          .post('/food/analyze')
+          .set('Authorization', `Bearer ${authToken}`)
+          .attach('image', filePath)
+          .field('description', '에러 테스트')
+          .expect(500)
+          .expect((res) => {
+            expect(res.body.message).toContain(
+              'Mock API error for testing purposes',
+            );
+          });
+      });
+    } else {
+      it('/food/analyze (POST) - real API: basic functionality', () => {
+        const filePath = path.join(__dirname, 'assets', 'mac.png');
+
+        return request(app.getHttpServer())
+          .post('/food/analyze')
+          .set('Authorization', `Bearer ${authToken}`)
+          .attach('image', filePath)
+          .field('description', '음식 사진 분석')
+          .expect(201)
+          .expect((res) => {
+            // 실제 API이므로 구체적인 값 검증보다는 구조 검증
+            expect(res.body).toHaveProperty('ingredients');
+            expect(res.body).toHaveProperty('totalCalories');
+            expect(res.body).toHaveProperty('breakdown');
+            expect(Array.isArray(res.body.ingredients)).toBe(true);
+            expect(typeof res.body.totalCalories).toBe('number');
+          });
+      }, 30000); // 실제 API는 시간이 더 걸림
+    }
   });
 
   it('/food/analyze (POST) - file size exceeds limit', () => {
