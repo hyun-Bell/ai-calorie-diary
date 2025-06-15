@@ -4,7 +4,10 @@ import {
   DIARY_REPOSITORY_PORT,
   DiaryRepositoryPort,
 } from '../port/out/diary-repository.port';
-import { FileStorageService, FILE_STORAGE_SERVICE_TOKEN } from '@common/storage/file-storage.interface';
+import {
+  FileStorageService,
+  FILE_STORAGE_SERVICE_TOKEN,
+} from '@common/storage/file-storage.interface';
 import { NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { Diary } from '@diary/domain/diary';
 import { FoodBreakdown } from '@common/dto/Ingredient.dto';

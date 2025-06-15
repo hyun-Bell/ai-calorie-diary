@@ -6,7 +6,10 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 
-import { FileStorageService, FILE_STORAGE_SERVICE_TOKEN } from '@common/storage/file-storage.interface';
+import {
+  FileStorageService,
+  FILE_STORAGE_SERVICE_TOKEN,
+} from '@common/storage/file-storage.interface';
 import { Diary } from '@diary/domain/diary';
 import { DiaryUseCase } from '@diary/application/port/in/diary.use-case';
 import {

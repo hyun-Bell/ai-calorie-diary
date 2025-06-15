@@ -6,7 +6,10 @@ import {
   OpenAIApiPort,
 } from '../port/out/openai-api.port';
 import { FoodAnalysis } from '@food/domain/food-analysis';
-import { FileStorageService, FILE_STORAGE_SERVICE_TOKEN } from '@common/storage/file-storage.interface';
+import {
+  FileStorageService,
+  FILE_STORAGE_SERVICE_TOKEN,
+} from '@common/storage/file-storage.interface';
 import { FoodAnalyzedEvent } from '@food/domain/events/food-analyzed.event';
 import * as sharp from 'sharp';
 
