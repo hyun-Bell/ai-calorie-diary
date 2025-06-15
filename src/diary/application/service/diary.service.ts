@@ -6,7 +6,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 
-import { S3Service } from '@common/s3/s3.service';
+import { FileStorageService, FILE_STORAGE_SERVICE_TOKEN } from '@common/storage/file-storage.interface';
 import { Diary } from '@diary/domain/diary';
 import { DiaryUseCase } from '@diary/application/port/in/diary.use-case';
 import {
@@ -20,7 +20,8 @@ export class DiaryService implements DiaryUseCase {
   constructor(
     @Inject(DIARY_REPOSITORY_PORT)
     private readonly diaryRepository: DiaryRepositoryPort,
-    private readonly s3Service: S3Service,
+    @Inject(FILE_STORAGE_SERVICE_TOKEN)
+    private readonly fileStorageService: FileStorageService,
   ) {}
 
   async createDiary(
@@ -32,7 +33,7 @@ export class DiaryService implements DiaryUseCase {
   ): Promise<Diary> {
     let imageUrl: string | null = null;
     if (imageFile) {
-      imageUrl = await this.s3Service.uploadFile(imageFile);
+      imageUrl = await this.fileStorageService.uploadFile(imageFile);
     }
     const diary = new Diary(
       '0',
@@ -98,7 +99,7 @@ export class DiaryService implements DiaryUseCase {
 
     let imageUrl = existingDiary.imageUrl;
     if (imageFile) {
-      imageUrl = await this.s3Service.uploadFile(imageFile);
+      imageUrl = await this.fileStorageService.uploadFile(imageFile);
     }
 
     return this.diaryRepository.updateDiary(id, {
@@ -121,7 +122,7 @@ export class DiaryService implements DiaryUseCase {
     }
 
     if (existingDiary.imageUrl) {
-      await this.s3Service.deleteFile(existingDiary.imageUrl);
+      await this.fileStorageService.deleteFile(existingDiary.imageUrl);
     }
     await this.diaryRepository.deleteDiary(id);
   }
