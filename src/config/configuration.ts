@@ -25,6 +25,7 @@ export default () => ({
   },
 
   openai: {
+    useMock: process.env.USE_MOCK_OPENAI === 'true',
     apiKey: process.env.OPENAI_API_KEY,
     orgId: process.env.OPENAI_ORG_ID,
     projectId: process.env.OPENAI_PROJECT_ID,

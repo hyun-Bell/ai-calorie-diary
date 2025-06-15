@@ -23,7 +23,25 @@ export const configValidationSchema = Joi.object({
   AWS_S3_BUCKET_NAME: Joi.string().required(),
 
   // OpenAI API 설정
-  OPENAI_API_KEY: Joi.string().required(),
-  OPENAI_ORG_ID: Joi.string().required(),
-  OPENAI_PROJECT_ID: Joi.string().required(),
+  USE_MOCK_OPENAI: Joi.alternatives()
+    .try(
+      Joi.boolean(),
+      Joi.string().valid('true', 'false').custom((value) => value === 'true')
+    )
+    .default(false),
+  OPENAI_API_KEY: Joi.string().when('USE_MOCK_OPENAI', {
+    is: false,
+    then: Joi.required(),
+    otherwise: Joi.optional(),
+  }),
+  OPENAI_ORG_ID: Joi.string().when('USE_MOCK_OPENAI', {
+    is: false,
+    then: Joi.required(),
+    otherwise: Joi.optional(),
+  }),
+  OPENAI_PROJECT_ID: Joi.string().when('USE_MOCK_OPENAI', {
+    is: false,
+    then: Joi.required(),
+    otherwise: Joi.optional(),
+  }),
 }).unknown(true);
