@@ -7,17 +7,16 @@ import { JwtService } from '@nestjs/jwt';
 import * as path from 'node:path';
 import * as fs from 'node:fs';
 import { v4 as uuidv4 } from 'uuid';
-import { S3Service } from '@common/s3/s3.service';
+import { FileStorageService, FILE_STORAGE_SERVICE_TOKEN } from '@common/storage/file-storage.interface';
 import { FoodBreakdown } from '@common/dto/Ingredient.dto';
 
-jest.mock('@common/s3/s3.service');
 jest.setTimeout(300000);
 
 describe('DiaryController (e2e)', () => {
   let app: INestApplication;
   let prismaService: PrismaService;
   let jwtService: JwtService;
-  let s3Service: jest.Mocked<S3Service>;
+  let fileStorageService: jest.Mocked<FileStorageService>;
   let authToken: string;
   let userId: string;
   let userEmail: string;
@@ -26,7 +25,7 @@ describe('DiaryController (e2e)', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     })
-      .overrideProvider(S3Service)
+      .overrideProvider(FILE_STORAGE_SERVICE_TOKEN)
       .useValue({
         uploadFile: jest.fn(),
         deleteFile: jest.fn(),
@@ -37,7 +36,7 @@ describe('DiaryController (e2e)', () => {
 
     prismaService = app.get(PrismaService);
     jwtService = app.get(JwtService);
-    s3Service = app.get(S3Service);
+    fileStorageService = app.get(FILE_STORAGE_SERVICE_TOKEN);
   });
 
   beforeEach(async () => {
@@ -58,7 +57,7 @@ describe('DiaryController (e2e)', () => {
       authToken = jwtService.sign({ sub: user.id, email: user.email });
     });
 
-    // Reset S3Service mock
+    // Reset FileStorageService mock
     jest.resetAllMocks();
   });
 
@@ -431,7 +430,7 @@ describe('DiaryController (e2e)', () => {
         },
       });
 
-      s3Service.deleteFile.mockResolvedValue(undefined);
+      fileStorageService.deleteFile.mockResolvedValue(undefined);
 
       await request(app.getHttpServer())
         .delete(`/diary/${diary.id}`)
@@ -442,7 +441,7 @@ describe('DiaryController (e2e)', () => {
         where: { id: diary.id },
       });
       expect(deletedDiary).toBeNull();
-      expect(s3Service.deleteFile).toHaveBeenCalledWith(mockImageUrl);
+      expect(fileStorageService.deleteFile).toHaveBeenCalledWith(mockImageUrl);
     });
 
     it('should delete a diary entry without image', async () => {
@@ -478,7 +477,7 @@ describe('DiaryController (e2e)', () => {
         where: { id: diary.id },
       });
       expect(deletedDiary).toBeNull();
-      expect(s3Service.deleteFile).not.toHaveBeenCalled();
+      expect(fileStorageService.deleteFile).not.toHaveBeenCalled();
     });
 
     it('should return 404 for deleting non-existent diary', () => {
