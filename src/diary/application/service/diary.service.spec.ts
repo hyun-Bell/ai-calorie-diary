@@ -4,7 +4,7 @@ import {
   DIARY_REPOSITORY_PORT,
   DiaryRepositoryPort,
 } from '../port/out/diary-repository.port';
-import { S3Service } from '@common/s3/s3.service';
+import { FileStorageService, FILE_STORAGE_SERVICE_TOKEN } from '@common/storage/file-storage.interface';
 import { NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { Diary } from '@diary/domain/diary';
 import { FoodBreakdown } from '@common/dto/Ingredient.dto';
@@ -12,7 +12,7 @@ import { FoodBreakdown } from '@common/dto/Ingredient.dto';
 describe('DiaryService', () => {
   let service: DiaryService;
   let mockDiaryRepository: jest.Mocked<DiaryRepositoryPort>;
-  let mockS3Service: jest.Mocked<S3Service>;
+  let mockFileStorageService: jest.Mocked<FileStorageService>;
 
   beforeEach(async () => {
     mockDiaryRepository = {
@@ -24,10 +24,10 @@ describe('DiaryService', () => {
       deleteDiary: jest.fn(),
     };
 
-    mockS3Service = {
+    mockFileStorageService = {
       uploadFile: jest.fn(),
       deleteFile: jest.fn(),
-    } as unknown as jest.Mocked<S3Service>;
+    } as unknown as jest.Mocked<FileStorageService>;
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -37,8 +37,8 @@ describe('DiaryService', () => {
           useValue: mockDiaryRepository,
         },
         {
-          provide: S3Service,
-          useValue: mockS3Service,
+          provide: FILE_STORAGE_SERVICE_TOKEN,
+          useValue: mockFileStorageService,
         },
       ],
     }).compile();
@@ -80,7 +80,7 @@ describe('DiaryService', () => {
         calorieBreakdown,
       );
 
-      mockS3Service.uploadFile.mockResolvedValue(imageUrl);
+      mockFileStorageService.uploadFile.mockResolvedValue(imageUrl);
       mockDiaryRepository.createDiary.mockResolvedValue(createdDiary);
 
       const result = await service.createDiary(
@@ -91,7 +91,7 @@ describe('DiaryService', () => {
         calorieBreakdown,
       );
 
-      expect(mockS3Service.uploadFile).toHaveBeenCalledWith(imageFile);
+      expect(mockFileStorageService.uploadFile).toHaveBeenCalledWith(imageFile);
       expect(mockDiaryRepository.createDiary).toHaveBeenCalledWith(
         expect.any(Diary),
       );
@@ -135,7 +135,7 @@ describe('DiaryService', () => {
         calorieBreakdown,
       );
 
-      expect(mockS3Service.uploadFile).not.toHaveBeenCalled();
+      expect(mockFileStorageService.uploadFile).not.toHaveBeenCalled();
       expect(mockDiaryRepository.createDiary).toHaveBeenCalledWith(
         expect.any(Diary),
       );
@@ -319,7 +319,7 @@ describe('DiaryService', () => {
           {},
         ),
       );
-      mockS3Service.uploadFile.mockResolvedValue(newImageUrl);
+      mockFileStorageService.uploadFile.mockResolvedValue(newImageUrl);
       mockDiaryRepository.updateDiary.mockResolvedValue(updatedDiary);
 
       const result = await service.updateDiary(
@@ -331,7 +331,7 @@ describe('DiaryService', () => {
         calorieBreakdown,
       );
 
-      expect(mockS3Service.uploadFile).toHaveBeenCalledWith(imageFile);
+      expect(mockFileStorageService.uploadFile).toHaveBeenCalledWith(imageFile);
       expect(mockDiaryRepository.updateDiary).toHaveBeenCalledWith(
         id,
         expect.objectContaining({
@@ -396,7 +396,7 @@ describe('DiaryService', () => {
         calorieBreakdown,
       );
 
-      expect(mockS3Service.uploadFile).not.toHaveBeenCalled();
+      expect(mockFileStorageService.uploadFile).not.toHaveBeenCalled();
       expect(mockDiaryRepository.updateDiary).toHaveBeenCalledWith(
         id,
         expect.objectContaining({
@@ -453,12 +453,12 @@ describe('DiaryService', () => {
 
       mockDiaryRepository.findDiaryById.mockResolvedValue(diaryToDelete);
       mockDiaryRepository.deleteDiary.mockResolvedValue();
-      mockS3Service.deleteFile.mockResolvedValue();
+      mockFileStorageService.deleteFile.mockResolvedValue();
 
       await service.deleteDiary(id, userId);
 
       expect(mockDiaryRepository.deleteDiary).toHaveBeenCalledWith(id);
-      expect(mockS3Service.deleteFile).toHaveBeenCalledWith(
+      expect(mockFileStorageService.deleteFile).toHaveBeenCalledWith(
         'http://image-url.com',
       );
     });

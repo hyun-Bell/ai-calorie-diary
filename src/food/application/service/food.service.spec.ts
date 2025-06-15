@@ -5,7 +5,7 @@ import {
   OpenAIApiPort,
   OpenAIApiPortSymbol,
 } from '../port/out/openai-api.port';
-import { S3Service } from '@common/s3/s3.service';
+import { FileStorageService, FILE_STORAGE_SERVICE_TOKEN } from '@common/storage/file-storage.interface';
 import { FoodAnalysis } from '@food/domain/food-analysis';
 import { FoodAnalyzedEvent } from '@food/domain/events/food-analyzed.event';
 
@@ -21,7 +21,7 @@ jest.mock('sharp', () => {
 describe('FoodService', () => {
   let service: FoodService;
   let openAIApiPort: jest.Mocked<OpenAIApiPort>;
-  let s3Service: jest.Mocked<S3Service>;
+  let fileStorageService: jest.Mocked<FileStorageService>;
   let eventEmitter: jest.Mocked<EventEmitter2>;
 
   beforeEach(async () => {
@@ -35,7 +35,7 @@ describe('FoodService', () => {
           },
         },
         {
-          provide: S3Service,
+          provide: FILE_STORAGE_SERVICE_TOKEN,
           useValue: {
             uploadFile: jest.fn(),
           },
@@ -51,7 +51,7 @@ describe('FoodService', () => {
 
     service = module.get<FoodService>(FoodService);
     openAIApiPort = module.get(OpenAIApiPortSymbol);
-    s3Service = module.get(S3Service);
+    fileStorageService = module.get(FILE_STORAGE_SERVICE_TOKEN);
     eventEmitter = module.get(EventEmitter2);
   });
 
@@ -90,7 +90,7 @@ describe('FoodService', () => {
         },
       };
 
-      s3Service.uploadFile.mockResolvedValue(mockImageUrl);
+      fileStorageService.uploadFile.mockResolvedValue(mockImageUrl);
       openAIApiPort.analyzeFood.mockResolvedValue(mockFoodAnalysis);
 
       // Act
@@ -101,7 +101,7 @@ describe('FoodService', () => {
       );
 
       // Assert
-      expect(s3Service.uploadFile).toHaveBeenCalledWith(
+      expect(fileStorageService.uploadFile).toHaveBeenCalledWith(
         expect.objectContaining({
           buffer: expect.any(Buffer),
           size: expect.any(Number),
