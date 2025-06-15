@@ -7,7 +7,10 @@ import { JwtService } from '@nestjs/jwt';
 import * as path from 'node:path';
 import * as fs from 'node:fs';
 import { v4 as uuidv4 } from 'uuid';
-import { FileStorageService, FILE_STORAGE_SERVICE_TOKEN } from '@common/storage/file-storage.interface';
+import {
+  FileStorageService,
+  FILE_STORAGE_SERVICE_TOKEN,
+} from '@common/storage/file-storage.interface';
 import { FoodBreakdown } from '@common/dto/Ingredient.dto';
 
 jest.setTimeout(300000);
