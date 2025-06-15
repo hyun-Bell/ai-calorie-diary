@@ -32,12 +32,21 @@ jobs:
           --health-retries 5
 
     env:
+      # Database
       DATABASE_URL: postgresql://postgres:guswhd12@localhost:5432/claude-cal-diary?schema=public
+      
+      # JWT
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      JWT_REFRESH_SECRET: ${{ secrets.JWT_REFRESH_SECRET }}
+      
+      # AWS
       AWS_REGION: ${{ secrets.AWS_REGION }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_S3_BUCKET_NAME: ${{ secrets.AWS_S3_BUCKET_NAME }}
+      
+      # OpenAI - GitHub에서 목업 여부 제어
+      USE_MOCK_OPENAI: ${{ vars.USE_MOCK_OPENAI || 'true' }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       OPENAI_ORG_ID: ${{ secrets.OPENAI_ORG_ID }}
       OPENAI_PROJECT_ID: ${{ secrets.OPENAI_PROJECT_ID }}
@@ -92,10 +101,10 @@ jobs:
           echo "${{ steps.run_tests.outputs.stdout }}" > test-results.txt
           echo "${{ steps.run_tests.outputs.stderr }}" >> test-results.txt
 
-      - name: Run e2e tests
+      - name: Run e2e tests (Mock)
         run: |
           pnpm prisma migrate deploy
-          pnpm test:e2e --json --outputFile=e2e-test-results.json
+          pnpm test:e2e:mock --json --outputFile=e2e-test-results.json
         continue-on-error: true
         id: run_e2e_tests
 
@@ -104,6 +113,13 @@ jobs:
         run: |
           echo "${{ steps.run_e2e_tests.outputs.stdout }}" > e2e-test-results.txt
           echo "${{ steps.run_e2e_tests.outputs.stderr }}" >> e2e-test-results.txt
+
+      - name: Run Food Integration Tests (Real API)
+        if: vars.RUN_REAL_API_TESTS == 'true' && vars.USE_MOCK_OPENAI == 'false'
+        run: |
+          pnpm test:food:real --json --outputFile=integration-test-results.json
+        continue-on-error: true
+        id: run_integration_tests
 
       - name: Check test results
         id: check_tests
@@ -165,6 +181,10 @@ jobs:
             
             let commentBody = '## 테스트 결과\n';
             
+            // 목업 모드 표시
+            const useMockOpenAI = process.env.USE_MOCK_OPENAI === 'true';
+            commentBody += `\n**OpenAI Mode**: ${useMockOpenAI ? '🎭 Mock (목업)' : '🌐 Real API (실제)'}\n`;
+            
             try {
               commentBody += '\n### Unit Tests\n';
               commentBody += parseTestResults('test-results.json');
@@ -173,10 +193,20 @@ jobs:
             }
             
             try {
-              commentBody += '\n### E2E Tests\n';
+              commentBody += '\n### E2E Tests (Mock)\n';
               commentBody += parseTestResults('e2e-test-results.json');
             } catch (error) {
               commentBody += '\nE2E test results parsing failed.\n';
+            }
+            
+            // 실제 API 통합 테스트 결과가 있다면 추가
+            try {
+              if (fs.existsSync('integration-test-results.json')) {
+                commentBody += '\n### Integration Tests (Real API)\n';
+                commentBody += parseTestResults('integration-test-results.json');
+              }
+            } catch (error) {
+              commentBody += '\nIntegration test results parsing failed.\n';
             }
             
             github.rest.issues.createComment({
