@@ -40,5 +40,9 @@ async function bootstrap() {
 
   app.enableCors();
   await app.listen(port);
+
+  console.log('\n🚀 \x1b[32m\x1b[1mAI Calorie Diary API is running!\x1b[0m\n');
+  console.log(`📱 Server URL: \x1b[36mhttp://localhost:${port}/api\x1b[0m`);
+  console.log(`📖 Swagger docs: \x1b[36mhttp://localhost:${port}/api\x1b[0m`);
 }
 bootstrap();
