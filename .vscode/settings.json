@@ -1,0 +1,143 @@
+{
+  // Cursor AI 설정
+  "cursor.chat.openaiModel": "gpt-4",
+  "cursor.cpp.enableIntelliSense": true,
+  
+  // TypeScript 설정 (프로젝트 path aliases 고려)
+  "typescript.preferences.includePackageJsonAutoImports": "auto",
+  "typescript.suggest.autoImports": true,
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "typescript.preferences.importModuleSpecifierEnding": "minimal",
+  
+  // 자동 포맷팅 (Prettier 설정에 맞춤)
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "editor.formatOnType": false,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit"
+  },
+  
+  // 파일 연관성 (NestJS + Prisma)
+  "files.associations": {
+    "*.prisma": "prisma",
+    "*.env*": "dotenv",
+    "*.spec.ts": "typescript",
+    "*.e2e-spec.ts": "typescript"
+  },
+  
+  // 제외할 파일/폴더 (성능 최적화)
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/.git": true,
+    "**/coverage": true,
+    "**/logs": true,
+    "**/uploads": true,
+    "**/.claude": true,
+    "**/pnpm-lock.yaml": true
+  },
+  
+  // 검색 제외 (빠른 검색을 위해)
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/coverage": true,
+    "**/logs": true,
+    "**/uploads": true,
+    "pnpm-lock.yaml": true,
+    "test-results.json": true
+  },
+  
+  // ESLint 설정 (프로젝트 구조에 맞춤)
+  "eslint.workingDirectories": [
+    {
+      "directory": "./ai-calorie-diary",
+      "changeProcessCwd": true
+    }
+  ],
+  "eslint.validate": [
+    "javascript",
+    "typescript"
+  ],
+  "eslint.format.enable": true,
+  
+  // Prettier 설정
+  "prettier.configPath": "./ai-calorie-diary/.prettierrc",
+  "prettier.requireConfig": true,
+  
+  // 자동완성 설정 (NestJS 데코레이터 지원)
+  "editor.suggestSelection": "first",
+  "editor.tabCompletion": "on",
+  "editor.quickSuggestions": {
+    "other": "on",
+    "comments": "off",
+    "strings": "on"
+  },
+  "editor.parameterHints.enabled": true,
+  "editor.inlayHints.enabled": "on",
+  
+  // 파일 감시 (대용량 파일 제외)
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/dist/**": true,
+    "**/logs/**": true,
+    "**/coverage/**": true,
+    "**/uploads/**": true
+  },
+  
+  // Git 설정
+  "git.enableSmartCommit": true,
+  "git.autofetch": true,
+  "git.confirmSync": false,
+  
+  // 터미널 설정 (macOS 최적화)
+  "terminal.integrated.defaultProfile.osx": "zsh",
+  "terminal.integrated.cwd": "${workspaceFolder}/ai-calorie-diary",
+  "terminal.integrated.env.osx": {
+    "NODE_ENV": "development"
+  },
+  
+  // NestJS 개발 최적화
+  "emmet.includeLanguages": {
+    "typescript": "html"
+  },
+  
+  // Prisma 설정
+  "prisma.showPrismaDataPlatformNotification": false,
+  
+  // 코드 렌즈 설정
+  "typescript.referencesCodeLens.enabled": true,
+  "typescript.implementationsCodeLens.enabled": true,
+  
+  // 자동 저장 설정
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1000,
+  
+  // 브래드크럼 설정 (긴 경로 표시)
+  "breadcrumbs.enabled": true,
+  "breadcrumbs.filePath": "on",
+  
+  // 미니맵 설정
+  "editor.minimap.enabled": true,
+  "editor.minimap.maxColumn": 120,
+  
+  // 들여쓰기 설정
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": true,
+  
+  // 줄 길이 가이드
+  "editor.rulers": [80, 120],
+  
+  // 테스트 파일 인식
+  "jest.jestCommandLine": "pnpm test",
+  "jest.rootPath": "ai-calorie-diary",
+  
+  // 디버거 설정
+  "debug.allowBreakpointsEverywhere": true,
+  
+  // 워크스페이스 신뢰 설정
+  "security.workspace.trust.untrustedFiles": "open"
+} 

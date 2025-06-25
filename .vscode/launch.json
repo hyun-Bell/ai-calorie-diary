@@ -1,0 +1,147 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "🚀 Debug NestJS App",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/ai-calorie-diary/src/main.ts",
+      "args": [],
+      "runtimeArgs": [
+        "-r",
+        "ts-node/register",
+        "-r",
+        "tsconfig-paths/register"
+      ],
+      "cwd": "${workspaceFolder}/ai-calorie-diary",
+      "env": {
+        "NODE_ENV": "development",
+        "PORT": "3000"
+      },
+      "console": "integratedTerminal",
+      "restart": true,
+      "protocol": "inspector",
+      "internalConsoleOptions": "neverOpen",
+      "sourceMaps": true,
+      "outFiles": [
+        "${workspaceFolder}/ai-calorie-diary/dist/**/*.js"
+      ],
+      "skipFiles": [
+        "<node_internals>/**",
+        "${workspaceFolder}/ai-calorie-diary/node_modules/**"
+      ]
+    },
+    {
+      "name": "🧪 Debug Jest Unit Tests",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/ai-calorie-diary/node_modules/.bin/jest",
+      "args": [
+        "--runInBand",
+        "--no-cache",
+        "--verbose",
+        "--testTimeout=10000"
+      ],
+      "cwd": "${workspaceFolder}/ai-calorie-diary",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "env": {
+        "NODE_ENV": "test"
+      },
+      "windows": {
+        "program": "${workspaceFolder}/ai-calorie-diary/node_modules/jest/bin/jest"
+      }
+    },
+    {
+      "name": "🔬 Debug E2E Tests",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/ai-calorie-diary/node_modules/.bin/jest",
+      "args": [
+        "--config",
+        "./test/jest-e2e.json",
+        "--runInBand",
+        "--verbose",
+        "--testTimeout=30000"
+      ],
+      "cwd": "${workspaceFolder}/ai-calorie-diary",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "env": {
+        "NODE_ENV": "test",
+        "USE_MOCK_OPENAI": "true"
+      },
+      "windows": {
+        "program": "${workspaceFolder}/ai-calorie-diary/node_modules/jest/bin/jest"
+      }
+    },
+    {
+      "name": "🎯 Debug Specific Test File",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/ai-calorie-diary/node_modules/.bin/jest",
+      "args": [
+        "${fileBasenameNoExtension}",
+        "--runInBand",
+        "--no-cache",
+        "--verbose"
+      ],
+      "cwd": "${workspaceFolder}/ai-calorie-diary",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "env": {
+        "NODE_ENV": "test"
+      },
+      "windows": {
+        "program": "${workspaceFolder}/ai-calorie-diary/node_modules/jest/bin/jest"
+      }
+    },
+    {
+      "name": "🔧 Debug Prisma Generate",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/ai-calorie-diary/node_modules/.bin/prisma",
+      "args": [
+        "generate"
+      ],
+      "cwd": "${workspaceFolder}/ai-calorie-diary",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "name": "🗄️ Debug Prisma Migration",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/ai-calorie-diary/node_modules/.bin/prisma",
+      "args": [
+        "migrate",
+        "dev"
+      ],
+      "cwd": "${workspaceFolder}/ai-calorie-diary",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "name": "🔍 Attach to Running Process",
+      "type": "node",
+      "request": "attach",
+      "port": 9229,
+      "restart": true,
+      "localRoot": "${workspaceFolder}/ai-calorie-diary",
+      "remoteRoot": "${workspaceFolder}/ai-calorie-diary",
+      "skipFiles": [
+        "<node_internals>/**",
+        "${workspaceFolder}/ai-calorie-diary/node_modules/**"
+      ]
+    }
+  ],
+  "compounds": [
+    {
+      "name": "🚀 Launch App + Debug Tests",
+      "configurations": [
+        "🚀 Debug NestJS App",
+        "🧪 Debug Jest Unit Tests"
+      ]
+    }
+  ]
+} 
