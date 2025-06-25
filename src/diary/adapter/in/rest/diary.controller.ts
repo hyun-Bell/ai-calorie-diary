@@ -35,6 +35,7 @@ import {
 import { User } from '@common/decorators/user.decorator';
 import { GetDiariesByPeriodDto } from '@diary/adapter/in/rest/dto/get-diaries-by-period.dto';
 import { DiaryPeriodMetric } from '@common/metrics/decorators/diary-period-metric.decorator';
+import { DiaryDeletedResponseDto } from './dto/diary-response.dto';
 
 @ApiTags('diary')
 @Controller('diary')
@@ -136,7 +137,7 @@ export class DiaryController {
   async deleteDiary(
     @Param('id', ParseUUIDPipe) id: string,
     @User('id') userId: string,
-  ) {
+  ): Promise<DiaryDeletedResponseDto> {
     await this.diaryUseCase.deleteDiary(id, userId);
     return { message: 'Diary successfully deleted' };
   }

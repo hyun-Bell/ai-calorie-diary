@@ -1,0 +1,77 @@
+{
+  "recommendations": [
+    // 🔧 필수 개발 도구
+    "ms-vscode.vscode-typescript-next",
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    
+    // 🏗️ NestJS 개발
+    "ms-vscode.vscode-json",
+    "redhat.vscode-yaml",
+    "ms-vscode.vscode-node-azure-pack",
+    
+    // 🐘 데이터베이스 & ORM
+    "prisma.prisma",
+    "ms-mssql.mssql",
+    "ckolkman.vscode-postgres",
+    
+    // 🧪 테스트 도구
+    "orta.vscode-jest",
+    "ms-vscode.vscode-jest-runner",
+    
+    // 🌐 API 개발
+    "humao.rest-client",
+    "42crunch.vscode-openapi",
+    "ms-vscode.vscode-thunder-client",
+    
+    // 📦 패키지 관리
+    "christian-kohler.npm-intellisense",
+    "eg2.vscode-npm-script",
+    
+    // 🔍 Git 도구
+    "eamodio.gitlens",
+    "mhutchie.git-graph",
+    
+    // 📝 문서화
+    "yzhang.markdown-all-in-one",
+    "davidanson.vscode-markdownlint",
+    
+    // 🎯 유틸리티
+    "streetsidesoftware.code-spell-checker",
+    "ms-vscode.vscode-todo-highlight",
+    "gruntfuggly.todo-tree",
+    "aaron-bond.better-comments",
+    
+    // 🔒 보안
+    "ms-vscode.vscode-security",
+    
+    // 🐳 Docker (프로젝트에 docker-compose.yml 있음)
+    "ms-azuretools.vscode-docker",
+    
+    // 📊 모니터링 (Prometheus 설정 있음)
+    "ms-vscode.vscode-prometheus",
+    
+    // 🎨 테마 & 아이콘
+    "pkief.material-icon-theme",
+    "github.github-vscode-theme",
+    "ms-vscode.theme-tomorrowkit",
+    
+    // ⚡ 성능 도구
+    "ms-vscode.vscode-profile-table",
+    "ms-vscode.hexeditor",
+    
+    // 🔧 개발 편의성
+    "formulahendry.auto-rename-tag",
+    "ms-vscode.vscode-typescript-tslint-plugin",
+    "bradlc.vscode-tailwindcss",
+    
+    // 📁 파일 관리
+    "ms-vscode.vscode-file-utils",
+    "alefragnani.project-manager"
+  ],
+  "unwantedRecommendations": [
+    // 불필요한 확장 프로그램들
+    "ms-vscode.vscode-typescript",
+    "vscode.typescript-language-features"
+  ]
+} 

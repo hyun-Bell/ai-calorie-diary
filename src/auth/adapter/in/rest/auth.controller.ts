@@ -31,6 +31,12 @@ import {
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@common/guards/jwt-auth.guard';
 import { ErrorResponseDto } from '@common/dto/error-response.dto';
+import {
+  LoginResponseDto,
+  RefreshTokenResponseDto,
+  RegisterResponseDto,
+  LogoutResponseDto,
+} from './dto/auth-response.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -66,7 +72,7 @@ export class AuthController {
   @ApiBody({ type: LoginDto })
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  async login(@Body() loginDto: LoginDto) {
+  async login(@Body() loginDto: LoginDto): Promise<LoginResponseDto> {
     try {
       const command = new LoginCommand(loginDto.email, loginDto.password);
       const { accessToken, refreshToken, user } = await this.authUseCase.login(
@@ -97,7 +103,9 @@ export class AuthController {
   @ApiBody({ type: RefreshTokenDto })
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
-  async refreshToken(@Body() refreshTokenDto: RefreshTokenDto) {
+  async refreshToken(
+    @Body() refreshTokenDto: RefreshTokenDto,
+  ): Promise<RefreshTokenResponseDto> {
     try {
       const command = new RefreshTokenCommand(refreshTokenDto.refreshToken);
       const { accessToken, refreshToken } = await this.authUseCase.refreshToken(
@@ -135,7 +143,9 @@ export class AuthController {
   @ApiBody({ type: RegisterDto })
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
-  async register(@Body() registerDto: RegisterDto) {
+  async register(
+    @Body() registerDto: RegisterDto,
+  ): Promise<RegisterResponseDto> {
     try {
       const command = new RegisterCommand(
         registerDto.email,
@@ -163,7 +173,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Post('logout')
   @HttpCode(HttpStatus.OK)
-  async logout(@Req() req: Request) {
+  async logout(@Req() req: Request): Promise<LogoutResponseDto> {
     const userId = req.user['id'];
     await this.authUseCase.logout(userId);
     return { message: 'Logout successful' };

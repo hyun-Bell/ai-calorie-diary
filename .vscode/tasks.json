@@ -1,0 +1,249 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "🚀 Start Development Server",
+      "type": "shell",
+      "command": "pnpm",
+      "args": ["run", "start:dev"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/ai-calorie-diary"
+      },
+      "problemMatcher": "$tsc-watch",
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
+    },
+    {
+      "label": "🧪 Run Unit Tests",
+      "type": "shell",
+      "command": "pnpm",
+      "args": ["test"],
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/ai-calorie-diary"
+      },
+      "problemMatcher": "$tsc"
+    },
+    {
+      "label": "🔬 Run E2E Tests",
+      "type": "shell",
+      "command": "pnpm",
+      "args": ["run", "test:e2e"],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/ai-calorie-diary"
+      },
+      "dependsOn": "🗄️ Prisma Deploy Migration"
+    },
+    {
+      "label": "🎯 Run Food Tests",
+      "type": "shell",
+      "command": "pnpm",
+      "args": ["run", "test:food"],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/ai-calorie-diary"
+      }
+    },
+    {
+      "label": "🔧 Prisma Generate",
+      "type": "shell",
+      "command": "pnpm",
+      "args": ["run", "generate"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/ai-calorie-diary"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "🗄️ Prisma Deploy Migration",
+      "type": "shell",
+      "command": "npx",
+      "args": ["prisma", "migrate", "deploy"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/ai-calorie-diary"
+      },
+      "dependsOn": "🔧 Prisma Generate"
+    },
+    {
+      "label": "🏗️ Build Project",
+      "type": "shell",
+      "command": "pnpm",
+      "args": ["run", "build"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/ai-calorie-diary"
+      },
+      "problemMatcher": "$tsc",
+      "dependsOn": "🔧 Prisma Generate"
+    },
+    {
+      "label": "🎨 Format Code",
+      "type": "shell",
+      "command": "pnpm",
+      "args": ["run", "format"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/ai-calorie-diary"
+      }
+    },
+    {
+      "label": "🔍 Lint Code",
+      "type": "shell",
+      "command": "pnpm",
+      "args": ["run", "lint"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/ai-calorie-diary"
+      },
+      "problemMatcher": "$eslint-stylish"
+    },
+    {
+      "label": "🧹 Clean & Install",
+      "type": "shell",
+      "command": "rm",
+      "args": ["-rf", "node_modules", "dist", "&&", "pnpm", "install"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/ai-calorie-diary"
+      }
+    },
+    {
+      "label": "🐳 Docker Compose Up",
+      "type": "shell",
+      "command": "docker-compose",
+      "args": ["up", "-d"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/ai-calorie-diary"
+      }
+    },
+    {
+      "label": "🛑 Docker Compose Down",
+      "type": "shell",
+      "command": "docker-compose",
+      "args": ["down"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/ai-calorie-diary"
+      }
+    },
+    {
+      "label": "📊 View Logs",
+      "type": "shell",
+      "command": "tail",
+      "args": ["-f", "logs/app.log"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "new"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/ai-calorie-diary"
+      },
+      "isBackground": true
+    },
+    {
+      "label": "🔄 Full Reset & Start",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "🧹 Clean & Install",
+        "🔧 Prisma Generate",
+        "🗄️ Prisma Deploy Migration",
+        "🚀 Start Development Server"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    }
+  ]
+} 
