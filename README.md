@@ -169,3 +169,75 @@ $ pnpm run test
 $ pnpm run test:e2e
 
 ```
+
+## 시작하기
+
+### 데이터베이스 설정
+
+```bash
+# Prisma 클라이언트 생성
+pnpm run generate
+
+# 데이터베이스 마이그레이션
+npx prisma db push
+
+# 목업 데이터 시드 (개발용)
+pnpm run db:seed
+
+# 데이터베이스 리셋 + 시드 (전체 초기화)
+pnpm run db:reset
+```
+
+### 목업 계정 정보
+
+개발 및 테스트를 위한 사전 생성된 계정들:
+
+| 이메일 | 비밀번호 | 목표 칼로리 | 일기 개수 | 특징 |
+|--------|----------|-------------|-----------|------|
+| `demo@example.com` | `demo123456` | 2000kcal | 4개 | 기본 데모 사용자 |
+| `test@example.com` | `test123456` | 1800kcal | 5개 | 테스트용 사용자 |
+| `user@example.com` | `user123456` | 2200kcal | 6개 | 일반 사용자 |
+| `poweruser@example.com` | `power123456` | 2500kcal | 8개 | 많은 데이터를 가진 사용자 |
+
+각 계정은 다양한 종류의 음식과 상세한 영양소 분석 데이터를 포함한 일기를 가지고 있습니다.
+
+### 시드 데이터 특징
+
+- **다양한 음식 타입**: 한식, 양식, 브런치, 운동 후 식단 등
+- **상세한 영양소 분석**: 단백질, 지방, 탄수화물별 상세 데이터
+- **현실적인 칼로리**: 실제 음식 칼로리를 반영한 데이터
+- **날짜 분산**: 최근 7일간의 데이터로 분산 배치
+- **사용자별 차별화**: 각 사용자마다 다른 일기 개수와 날짜
+
+### 스크립트 명령어
+
+```bash
+# 개발 서버 시작
+pnpm run start:dev
+
+# 시드만 실행
+pnpm run db:seed
+
+# 데이터베이스 완전 리셋 후 시드
+pnpm run db:reset
+
+# API 문서 생성
+pnpm run docs
+
+# API 문서 생성 후 브라우저에서 열기
+pnpm run docs:open
+```
+
+## API 문서
+
+자세한 API 명세는 다음을 참고하세요:
+- **Swagger UI**: http://localhost:3000/api (서버 실행 후)
+- **상세 명세서**: [docs/API_SPECIFICATION.md](./docs/API_SPECIFICATION.md)
+- **자동 생성된 문서**: `pnpm run docs` 실행 후 `docs/` 폴더
+
+## 개발 환경
+
+- Node.js 18+
+- PostgreSQL
+- Prisma ORM
+- NestJS Framework
