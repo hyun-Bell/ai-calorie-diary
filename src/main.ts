@@ -24,11 +24,17 @@ async function bootstrap() {
   app.use(cookieParser());
 
   const config = new DocumentBuilder()
-    .setTitle('음식 칼로리 계산 API')
-    .setDescription('음식 사진을 분석하여 칼로리를 계산하는 API')
+    .setTitle('AI 칼로리 다이어리 API')
+    .setDescription(
+      '음식 사진을 분석하여 칼로리를 계산하고 일기를 작성하는 API',
+    )
     .setVersion('1.0')
-    .addTag('food')
+    .addTag('auth', '인증 관련 API')
+    .addTag('diary', '일기 관련 API')
+    .addTag('food', '음식 분석 관련 API')
+    .addTag('user', '사용자 관련 API')
     .addBearerAuth()
+    .addServer('http://localhost:3000', '개발 서버')
     .build();
 
   const configService = app.get(ConfigService);

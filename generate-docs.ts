@@ -5,9 +5,9 @@ import * as fs from 'fs';
 
 async function generateDocs() {
   console.log('🚀 API 문서 생성 중...');
-  
-  const app = await NestFactory.create(AppModule, { 
-    logger: ['error'] // 로그 최소화
+
+  const app = await NestFactory.create(AppModule, {
+    logger: ['error'],
   });
 
   const config = new DocumentBuilder()
@@ -26,17 +26,13 @@ async function generateDocs() {
 
   const document = SwaggerModule.createDocument(app, config);
 
-  // docs 폴더 생성
   if (!fs.existsSync('./docs')) {
     fs.mkdirSync('./docs');
   }
 
-  // OpenAPI JSON 저장
   fs.writeFileSync('./docs/openapi.json', JSON.stringify(document, null, 2));
-  
-  // 간단한 HTML 문서 생성
-  const html = `
-<!DOCTYPE html>
+
+  const html = `<!DOCTYPE html>
 <html>
 <head>
     <title>AI 칼로리 다이어리 API 문서</title>
@@ -73,7 +69,6 @@ async function generateDocs() {
 
   fs.writeFileSync('./docs/index.html', html);
 
-  // 마크다운 문서 생성
   const markdown = generateMarkdown(document);
   fs.writeFileSync('./docs/README.md', markdown);
 
@@ -90,18 +85,18 @@ function generateMarkdown(document: any): string {
   let md = `# ${document.info.title}\n\n`;
   md += `${document.info.description}\n\n`;
   md += `**Version:** ${document.info.version}\n\n`;
-  
+
   md += `## 🔗 빠른 링크\n\n`;
   md += `- [Swagger UI](http://localhost:3000/api) - 서버 실행 후 접속\n`;
   md += `- [OpenAPI JSON](./openapi.json)\n`;
   md += `- [HTML 문서](./index.html)\n\n`;
-  
+
   md += `## 🔐 인증\n\n`;
   md += `이 API는 JWT Bearer 토큰을 사용합니다.\n\n`;
   md += `\`\`\`\nAuthorization: Bearer <your-jwt-token>\n\`\`\`\n\n`;
-  
+
   md += `## 📋 API 엔드포인트\n\n`;
-  
+
   const tags = ['auth', 'diary', 'food', 'user'];
   tags.forEach((tag) => {
     md += `### ${tag.toUpperCase()}\n\n`;
@@ -109,7 +104,9 @@ function generateMarkdown(document: any): string {
       Object.keys(document.paths[path]).forEach((method) => {
         const operation = document.paths[path][method];
         if (operation.tags?.includes(tag)) {
-          md += `- **${method.toUpperCase()}** \`${path}\` - ${operation.summary || 'No summary'}\n`;
+          md += `- **${method.toUpperCase()}** \`${path}\` - ${
+            operation.summary || 'No summary'
+          }\n`;
         }
       });
     });
@@ -120,9 +117,11 @@ function generateMarkdown(document: any): string {
   md += `### 1. 문서 생성\n`;
   md += `\`\`\`bash\npnpm run docs\n\`\`\`\n\n`;
   md += `### 2. 브라우저에서 확인\n`;
-  md += `\`\`\`bash\n# HTML 문서 열기\nopen docs/index.html\n\n# 또는 서버 실행 후 Swagger UI 접속\npnpm run start:dev\n# http://localhost:3000/api\n\`\`\`\n\n`;
-  
+  md += `\`\`\`bash\n# HTML 문서 열기\nopen docs/index.html\n\n`;
+  md += `# 또는 서버 실행 후 Swagger UI 접속\npnpm run start:dev\n`;
+  md += `# http://localhost:3000/api\n\`\`\`\n\n`;
+
   return md;
 }
 
-generateDocs().catch(console.error); 
+generateDocs().catch(console.error);

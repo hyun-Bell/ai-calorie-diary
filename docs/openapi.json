@@ -1,0 +1,2046 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "summary": "사용자 로그인",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "로그인 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "accessToken": {
+                      "type": "string"
+                    },
+                    "refreshToken": {
+                      "type": "string"
+                    },
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "인증 실패",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "operationId": "AuthController_refreshToken",
+        "summary": "토큰 갱신",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshTokenDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "토큰 갱신 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "accessToken": {
+                      "type": "string"
+                    },
+                    "refreshToken": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "토큰 갱신 실패"
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "operationId": "AuthController_register",
+        "summary": "사용자 등록",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "사용자 등록 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "accessToken": {
+                      "type": "string"
+                    },
+                    "refreshToken": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "잘못된 요청",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "이미 존재하는 이메일",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout",
+        "summary": "로그아웃",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "로그아웃 성공"
+          }
+        },
+        "tags": [
+          "auth"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/metrics": {
+      "get": {
+        "operationId": "MetricsController_index",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/metrics": {
+      "get": {
+        "operationId": "PrometheusController_index",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/user/info": {
+      "get": {
+        "operationId": "UserController_getUserInfo",
+        "summary": "사용자 정보 조회",
+        "description": "현재 로그인한 사용자의 정보를 조회합니다.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "사용자 정보 조회 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserInfoResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "인증되지 않은 사용자"
+          },
+          "500": {
+            "description": "서버 오류"
+          }
+        },
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/user/target-calories": {
+      "put": {
+        "operationId": "UserController_updateTargetCalories",
+        "summary": "목표 칼로리 수정",
+        "description": "사용자의 일일 목표 칼로리를 수정합니다.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTargetCaloriesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "목표 칼로리 수정 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateTargetCaloriesResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "잘못된 요청 (예: 유효하지 않은 칼로리 값)"
+          },
+          "401": {
+            "description": "인증되지 않은 사용자"
+          },
+          "500": {
+            "description": "서버 오류"
+          }
+        },
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/diary": {
+      "post": {
+        "operationId": "DiaryController_createDiary",
+        "summary": "일기 작성",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "JWT 토큰. 예: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "content": {
+                    "type": "string",
+                    "example": "오늘 점심으로 맛있는 비빔밥을 먹었다."
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "totalCalories": {
+                    "type": "number",
+                    "example": 600
+                  },
+                  "calorieBreakdown": {
+                    "type": "string",
+                    "example": "{\"밥\":{\"protein\":{\"amount\":3,\"unit\":\"g\",\"calories\":12},\"fat\":{\"amount\":0.3,\"unit\":\"g\",\"calories\":2.7},\"carbohydrate\":{\"amount\":28,\"unit\":\"g\",\"calories\":112}},\"소고기\":{\"protein\":{\"amount\":20,\"unit\":\"g\",\"calories\":80},\"fat\":{\"amount\":15,\"unit\":\"g\",\"calories\":135},\"carbohydrate\":{\"amount\":0,\"unit\":\"g\",\"calories\":0}}}"
+                  }
+                },
+                "$ref": "#/components/schemas/CreateDiaryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "일기가 성공적으로 작성되었습니다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "123e4567-e89b-12d3-a456-426614174000"
+                    },
+                    "content": {
+                      "type": "string",
+                      "example": "오늘 점심으로 맛있는 비빔밥을 먹었다. 건강한 한식을 먹으니 기분이 좋아졌다."
+                    },
+                    "imageUrl": {
+                      "type": "string",
+                      "example": "https://example.com/images/bibimbap.jpg"
+                    },
+                    "userId": {
+                      "type": "string",
+                      "example": "98765432-10ab-cdef-ghij-klmnopqrstuv"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-06-07T10:30:00Z"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-06-07T10:30:00Z"
+                    },
+                    "totalCalories": {
+                      "type": "number",
+                      "example": 600
+                    },
+                    "calorieBreakdown": {
+                      "type": "object",
+                      "example": {
+                        "밥": {
+                          "protein": {
+                            "amount": 3,
+                            "unit": "g",
+                            "calories": 12
+                          },
+                          "fat": {
+                            "amount": 0.3,
+                            "unit": "g",
+                            "calories": 2.7
+                          },
+                          "carbohydrate": {
+                            "amount": 28,
+                            "unit": "g",
+                            "calories": 112
+                          }
+                        },
+                        "소고기": {
+                          "protein": {
+                            "amount": 20,
+                            "unit": "g",
+                            "calories": 80
+                          },
+                          "fat": {
+                            "amount": 15,
+                            "unit": "g",
+                            "calories": 135
+                          },
+                          "carbohydrate": {
+                            "amount": 0,
+                            "unit": "g",
+                            "calories": 0
+                          }
+                        },
+                        "계란": {
+                          "protein": {
+                            "amount": 6,
+                            "unit": "g",
+                            "calories": 24
+                          },
+                          "fat": {
+                            "amount": 5,
+                            "unit": "g",
+                            "calories": 45
+                          },
+                          "carbohydrate": {
+                            "amount": 0.6,
+                            "unit": "g",
+                            "calories": 2.4
+                          }
+                        },
+                        "야채": {
+                          "protein": {
+                            "amount": 2,
+                            "unit": "g",
+                            "calories": 8
+                          },
+                          "fat": {
+                            "amount": 0.5,
+                            "unit": "g",
+                            "calories": 4.5
+                          },
+                          "carbohydrate": {
+                            "amount": 5,
+                            "unit": "g",
+                            "calories": 20
+                          }
+                        },
+                        "고추장": {
+                          "protein": {
+                            "amount": 2,
+                            "unit": "g",
+                            "calories": 8
+                          },
+                          "fat": {
+                            "amount": 1,
+                            "unit": "g",
+                            "calories": 9
+                          },
+                          "carbohydrate": {
+                            "amount": 10,
+                            "unit": "g",
+                            "calories": 40
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "잘못된 요청",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "인증되지 않음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "접근 권한 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenResponseDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "서버 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "diary"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "get": {
+        "operationId": "DiaryController_getUserDiaries",
+        "summary": "사용자의 모든 일기 조회",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "JWT 토큰. 예: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "사용자의 모든 일기를 성공적으로 조회했습니다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "example": "123e4567-e89b-12d3-a456-426614174000"
+                      },
+                      "content": {
+                        "type": "string",
+                        "example": "오늘 점심으로 맛있는 비빔밥을 먹었다. 건강한 한식을 먹으니 기분이 좋아졌다."
+                      },
+                      "imageUrl": {
+                        "type": "string",
+                        "example": "https://example.com/images/bibimbap.jpg"
+                      },
+                      "userId": {
+                        "type": "string",
+                        "example": "98765432-10ab-cdef-ghij-klmnopqrstuv"
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-06-07T10:30:00Z"
+                      },
+                      "updatedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-06-07T10:30:00Z"
+                      },
+                      "totalCalories": {
+                        "type": "number",
+                        "example": 600
+                      },
+                      "calorieBreakdown": {
+                        "type": "object",
+                        "example": {
+                          "밥": {
+                            "protein": {
+                              "amount": 3,
+                              "unit": "g",
+                              "calories": 12
+                            },
+                            "fat": {
+                              "amount": 0.3,
+                              "unit": "g",
+                              "calories": 2.7
+                            },
+                            "carbohydrate": {
+                              "amount": 28,
+                              "unit": "g",
+                              "calories": 112
+                            }
+                          },
+                          "소고기": {
+                            "protein": {
+                              "amount": 20,
+                              "unit": "g",
+                              "calories": 80
+                            },
+                            "fat": {
+                              "amount": 15,
+                              "unit": "g",
+                              "calories": 135
+                            },
+                            "carbohydrate": {
+                              "amount": 0,
+                              "unit": "g",
+                              "calories": 0
+                            }
+                          },
+                          "계란": {
+                            "protein": {
+                              "amount": 6,
+                              "unit": "g",
+                              "calories": 24
+                            },
+                            "fat": {
+                              "amount": 5,
+                              "unit": "g",
+                              "calories": 45
+                            },
+                            "carbohydrate": {
+                              "amount": 0.6,
+                              "unit": "g",
+                              "calories": 2.4
+                            }
+                          },
+                          "야채": {
+                            "protein": {
+                              "amount": 2,
+                              "unit": "g",
+                              "calories": 8
+                            },
+                            "fat": {
+                              "amount": 0.5,
+                              "unit": "g",
+                              "calories": 4.5
+                            },
+                            "carbohydrate": {
+                              "amount": 5,
+                              "unit": "g",
+                              "calories": 20
+                            }
+                          },
+                          "고추장": {
+                            "protein": {
+                              "amount": 2,
+                              "unit": "g",
+                              "calories": 8
+                            },
+                            "fat": {
+                              "amount": 1,
+                              "unit": "g",
+                              "calories": 9
+                            },
+                            "carbohydrate": {
+                              "amount": 10,
+                              "unit": "g",
+                              "calories": 40
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "인증되지 않음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "접근 권한 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenResponseDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "서버 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "diary"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/diary/period": {
+      "get": {
+        "operationId": "DiaryController_getDiariesByPeriod",
+        "summary": "특정 기간의 일기 조회",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "JWT 토큰. 예: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "startDate",
+            "required": true,
+            "in": "query",
+            "example": "2023-01-01",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "endDate",
+            "required": true,
+            "in": "query",
+            "example": "2023-12-31",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "특정 기간의 일기를 성공적으로 조회했습니다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "example": "123e4567-e89b-12d3-a456-426614174000"
+                      },
+                      "content": {
+                        "type": "string",
+                        "example": "오늘 점심으로 맛있는 비빔밥을 먹었다. 건강한 한식을 먹으니 기분이 좋아졌다."
+                      },
+                      "imageUrl": {
+                        "type": "string",
+                        "example": "https://example.com/images/bibimbap.jpg"
+                      },
+                      "userId": {
+                        "type": "string",
+                        "example": "98765432-10ab-cdef-ghij-klmnopqrstuv"
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-06-07T10:30:00Z"
+                      },
+                      "updatedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-06-07T10:30:00Z"
+                      },
+                      "totalCalories": {
+                        "type": "number",
+                        "example": 600
+                      },
+                      "calorieBreakdown": {
+                        "type": "object",
+                        "example": {
+                          "밥": {
+                            "protein": {
+                              "amount": 3,
+                              "unit": "g",
+                              "calories": 12
+                            },
+                            "fat": {
+                              "amount": 0.3,
+                              "unit": "g",
+                              "calories": 2.7
+                            },
+                            "carbohydrate": {
+                              "amount": 28,
+                              "unit": "g",
+                              "calories": 112
+                            }
+                          },
+                          "소고기": {
+                            "protein": {
+                              "amount": 20,
+                              "unit": "g",
+                              "calories": 80
+                            },
+                            "fat": {
+                              "amount": 15,
+                              "unit": "g",
+                              "calories": 135
+                            },
+                            "carbohydrate": {
+                              "amount": 0,
+                              "unit": "g",
+                              "calories": 0
+                            }
+                          },
+                          "계란": {
+                            "protein": {
+                              "amount": 6,
+                              "unit": "g",
+                              "calories": 24
+                            },
+                            "fat": {
+                              "amount": 5,
+                              "unit": "g",
+                              "calories": 45
+                            },
+                            "carbohydrate": {
+                              "amount": 0.6,
+                              "unit": "g",
+                              "calories": 2.4
+                            }
+                          },
+                          "야채": {
+                            "protein": {
+                              "amount": 2,
+                              "unit": "g",
+                              "calories": 8
+                            },
+                            "fat": {
+                              "amount": 0.5,
+                              "unit": "g",
+                              "calories": 4.5
+                            },
+                            "carbohydrate": {
+                              "amount": 5,
+                              "unit": "g",
+                              "calories": 20
+                            }
+                          },
+                          "고추장": {
+                            "protein": {
+                              "amount": 2,
+                              "unit": "g",
+                              "calories": 8
+                            },
+                            "fat": {
+                              "amount": 1,
+                              "unit": "g",
+                              "calories": 9
+                            },
+                            "carbohydrate": {
+                              "amount": 10,
+                              "unit": "g",
+                              "calories": 40
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "잘못된 요청",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "인증되지 않음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "접근 권한 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenResponseDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "서버 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "diary"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/diary/{id}": {
+      "get": {
+        "operationId": "DiaryController_getDiary",
+        "summary": "특정 일기 조회",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "JWT 토큰. 예: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "조회할 일기의 ID",
+            "schema": {
+              "type": "string"
+            },
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "일기를 성공적으로 조회했습니다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "123e4567-e89b-12d3-a456-426614174000"
+                    },
+                    "content": {
+                      "type": "string",
+                      "example": "오늘 점심으로 맛있는 비빔밥을 먹었다. 건강한 한식을 먹으니 기분이 좋아졌다."
+                    },
+                    "imageUrl": {
+                      "type": "string",
+                      "example": "https://example.com/images/bibimbap.jpg"
+                    },
+                    "userId": {
+                      "type": "string",
+                      "example": "98765432-10ab-cdef-ghij-klmnopqrstuv"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-06-07T10:30:00Z"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-06-07T10:30:00Z"
+                    },
+                    "totalCalories": {
+                      "type": "number",
+                      "example": 600
+                    },
+                    "calorieBreakdown": {
+                      "type": "object",
+                      "example": {
+                        "밥": {
+                          "protein": {
+                            "amount": 3,
+                            "unit": "g",
+                            "calories": 12
+                          },
+                          "fat": {
+                            "amount": 0.3,
+                            "unit": "g",
+                            "calories": 2.7
+                          },
+                          "carbohydrate": {
+                            "amount": 28,
+                            "unit": "g",
+                            "calories": 112
+                          }
+                        },
+                        "소고기": {
+                          "protein": {
+                            "amount": 20,
+                            "unit": "g",
+                            "calories": 80
+                          },
+                          "fat": {
+                            "amount": 15,
+                            "unit": "g",
+                            "calories": 135
+                          },
+                          "carbohydrate": {
+                            "amount": 0,
+                            "unit": "g",
+                            "calories": 0
+                          }
+                        },
+                        "계란": {
+                          "protein": {
+                            "amount": 6,
+                            "unit": "g",
+                            "calories": 24
+                          },
+                          "fat": {
+                            "amount": 5,
+                            "unit": "g",
+                            "calories": 45
+                          },
+                          "carbohydrate": {
+                            "amount": 0.6,
+                            "unit": "g",
+                            "calories": 2.4
+                          }
+                        },
+                        "야채": {
+                          "protein": {
+                            "amount": 2,
+                            "unit": "g",
+                            "calories": 8
+                          },
+                          "fat": {
+                            "amount": 0.5,
+                            "unit": "g",
+                            "calories": 4.5
+                          },
+                          "carbohydrate": {
+                            "amount": 5,
+                            "unit": "g",
+                            "calories": 20
+                          }
+                        },
+                        "고추장": {
+                          "protein": {
+                            "amount": 2,
+                            "unit": "g",
+                            "calories": 8
+                          },
+                          "fat": {
+                            "amount": 1,
+                            "unit": "g",
+                            "calories": 9
+                          },
+                          "carbohydrate": {
+                            "amount": 10,
+                            "unit": "g",
+                            "calories": 40
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "인증되지 않음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "접근 권한 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "일기를 찾을 수 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundResponseDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "서버 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "diary"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "put": {
+        "operationId": "DiaryController_updateDiary",
+        "summary": "일기 수정",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "JWT 토큰. 예: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "수정할 일기의 ID",
+            "schema": {
+              "type": "string"
+            },
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "content": {
+                    "type": "string",
+                    "example": "오늘 점심으로 맛있는 비빔밥을 먹었다. 저녁에는 가벼운 운동도 했다."
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "totalCalories": {
+                    "type": "number",
+                    "example": 600
+                  },
+                  "calorieBreakdown": {
+                    "type": "string",
+                    "example": "{\"밥\":{\"protein\":{\"amount\":3,\"unit\":\"g\",\"calories\":12},\"fat\":{\"amount\":0.3,\"unit\":\"g\",\"calories\":2.7},\"carbohydrate\":{\"amount\":28,\"unit\":\"g\",\"calories\":112}},\"소고기\":{\"protein\":{\"amount\":20,\"unit\":\"g\",\"calories\":80},\"fat\":{\"amount\":15,\"unit\":\"g\",\"calories\":135},\"carbohydrate\":{\"amount\":0,\"unit\":\"g\",\"calories\":0}}}"
+                  }
+                },
+                "$ref": "#/components/schemas/CreateDiaryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "일기가 성공적으로 수정되었습니다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "123e4567-e89b-12d3-a456-426614174000"
+                    },
+                    "content": {
+                      "type": "string",
+                      "example": "오늘 점심으로 맛있는 비빔밥을 먹었다. 건강한 한식을 먹으니 기분이 좋아졌다."
+                    },
+                    "imageUrl": {
+                      "type": "string",
+                      "example": "https://example.com/images/bibimbap.jpg"
+                    },
+                    "userId": {
+                      "type": "string",
+                      "example": "98765432-10ab-cdef-ghij-klmnopqrstuv"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-06-07T10:30:00Z"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-06-07T10:30:00Z"
+                    },
+                    "totalCalories": {
+                      "type": "number",
+                      "example": 600
+                    },
+                    "calorieBreakdown": {
+                      "type": "object",
+                      "example": {
+                        "밥": {
+                          "protein": {
+                            "amount": 3,
+                            "unit": "g",
+                            "calories": 12
+                          },
+                          "fat": {
+                            "amount": 0.3,
+                            "unit": "g",
+                            "calories": 2.7
+                          },
+                          "carbohydrate": {
+                            "amount": 28,
+                            "unit": "g",
+                            "calories": 112
+                          }
+                        },
+                        "소고기": {
+                          "protein": {
+                            "amount": 20,
+                            "unit": "g",
+                            "calories": 80
+                          },
+                          "fat": {
+                            "amount": 15,
+                            "unit": "g",
+                            "calories": 135
+                          },
+                          "carbohydrate": {
+                            "amount": 0,
+                            "unit": "g",
+                            "calories": 0
+                          }
+                        },
+                        "계란": {
+                          "protein": {
+                            "amount": 6,
+                            "unit": "g",
+                            "calories": 24
+                          },
+                          "fat": {
+                            "amount": 5,
+                            "unit": "g",
+                            "calories": 45
+                          },
+                          "carbohydrate": {
+                            "amount": 0.6,
+                            "unit": "g",
+                            "calories": 2.4
+                          }
+                        },
+                        "야채": {
+                          "protein": {
+                            "amount": 2,
+                            "unit": "g",
+                            "calories": 8
+                          },
+                          "fat": {
+                            "amount": 0.5,
+                            "unit": "g",
+                            "calories": 4.5
+                          },
+                          "carbohydrate": {
+                            "amount": 5,
+                            "unit": "g",
+                            "calories": 20
+                          }
+                        },
+                        "고추장": {
+                          "protein": {
+                            "amount": 2,
+                            "unit": "g",
+                            "calories": 8
+                          },
+                          "fat": {
+                            "amount": 1,
+                            "unit": "g",
+                            "calories": 9
+                          },
+                          "carbohydrate": {
+                            "amount": 10,
+                            "unit": "g",
+                            "calories": 40
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "잘못된 요청",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "인증되지 않음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "접근 권한 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "일기를 찾을 수 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundResponseDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "서버 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "diary"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "DiaryController_deleteDiary",
+        "summary": "일기 삭제",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "JWT 토큰. 예: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "삭제할 일기의 ID",
+            "schema": {
+              "type": "string"
+            },
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "일기가 성공적으로 삭제되었습니다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Diary successfully deleted"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "인증되지 않음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "접근 권한 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "일기를 찾을 수 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundResponseDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "서버 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "diary"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/food/analyze": {
+      "post": {
+        "operationId": "FoodController_analyzeFoodImage",
+        "summary": "음식 이미지 분석",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "JWT 토큰. 예: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/FoodAnalysisDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "음식 이미지 분석 결과",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ingredients": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": [
+                        "chicken",
+                        "rice",
+                        "broccoli"
+                      ]
+                    },
+                    "totalCalories": {
+                      "type": "number",
+                      "example": 500
+                    },
+                    "breakdown": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "object",
+                        "properties": {
+                          "protein": {
+                            "type": "object",
+                            "properties": {
+                              "amount": {
+                                "type": "number"
+                              },
+                              "unit": {
+                                "type": "string",
+                                "example": "g"
+                              },
+                              "calories": {
+                                "type": "number"
+                              }
+                            }
+                          },
+                          "fat": {
+                            "type": "object",
+                            "properties": {
+                              "amount": {
+                                "type": "number"
+                              },
+                              "unit": {
+                                "type": "string",
+                                "example": "g"
+                              },
+                              "calories": {
+                                "type": "number"
+                              }
+                            }
+                          },
+                          "carbohydrate": {
+                            "type": "object",
+                            "properties": {
+                              "amount": {
+                                "type": "number"
+                              },
+                              "unit": {
+                                "type": "string",
+                                "example": "g"
+                              },
+                              "calories": {
+                                "type": "number"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "example": {
+                        "chicken": {
+                          "protein": {
+                            "amount": 25,
+                            "unit": "g",
+                            "calories": 100
+                          },
+                          "fat": {
+                            "amount": 3,
+                            "unit": "g",
+                            "calories": 27
+                          },
+                          "carbohydrate": {
+                            "amount": 0,
+                            "unit": "g",
+                            "calories": 0
+                          }
+                        },
+                        "rice": {
+                          "protein": {
+                            "amount": 4,
+                            "unit": "g",
+                            "calories": 16
+                          },
+                          "fat": {
+                            "amount": 0.5,
+                            "unit": "g",
+                            "calories": 4.5
+                          },
+                          "carbohydrate": {
+                            "amount": 45,
+                            "unit": "g",
+                            "calories": 180
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "인증되지 않음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedResponseDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "서버 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "food"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "AI 칼로리 다이어리 API",
+    "description": "음식 사진을 분석하여 칼로리를 계산하고 일기를 작성하는 API",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [
+    {
+      "name": "auth",
+      "description": "인증 관련 API"
+    },
+    {
+      "name": "diary",
+      "description": "일기 관련 API"
+    },
+    {
+      "name": "food",
+      "description": "음식 분석 관련 API"
+    },
+    {
+      "name": "user",
+      "description": "사용자 관련 API"
+    }
+  ],
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "개발 서버"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "user@example.com",
+            "description": "사용자 이메일"
+          },
+          "password": {
+            "type": "string",
+            "example": "password",
+            "description": "사용자 비밀번호"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "ErrorResponseDto": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "number",
+            "example": 400
+          },
+          "error": {
+            "type": "string",
+            "example": "Bad Request"
+          },
+          "message": {
+            "type": "string",
+            "example": "Invalid input data"
+          },
+          "errorCode": {
+            "type": "string",
+            "example": "INVALID_INPUT"
+          },
+          "timestamp": {
+            "type": "string",
+            "example": "2023-05-20T12:34:56.789Z"
+          },
+          "path": {
+            "type": "string",
+            "example": "/auth/login"
+          }
+        },
+        "required": [
+          "statusCode",
+          "error",
+          "message",
+          "errorCode",
+          "timestamp",
+          "path"
+        ]
+      },
+      "RefreshTokenDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "RegisterDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UserInfoResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "사용자 고유 ID"
+          },
+          "email": {
+            "type": "string",
+            "description": "사용자 이메일"
+          },
+          "targetCalories": {
+            "type": "number",
+            "description": "일일 목표 칼로리",
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "계정 생성 일시"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "계정 정보 마지막 수정 일시"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "targetCalories",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "UpdateTargetCaloriesDto": {
+        "type": "object",
+        "properties": {
+          "targetCalories": {
+            "type": "number",
+            "description": "설정할 목표 칼로리",
+            "minimum": 500,
+            "maximum": 10000,
+            "example": 2000
+          }
+        },
+        "required": [
+          "targetCalories"
+        ]
+      },
+      "UpdateTargetCaloriesResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "업데이트 성공 메시지"
+          },
+          "targetCalories": {
+            "type": "number",
+            "description": "업데이트된 목표 칼로리"
+          }
+        },
+        "required": [
+          "message",
+          "targetCalories"
+        ]
+      },
+      "CreateDiaryDto": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "일기 내용"
+          },
+          "image": {
+            "type": "string",
+            "description": "이미지 파일",
+            "format": "binary"
+          },
+          "totalCalories": {
+            "type": "number",
+            "description": "총 칼로리"
+          },
+          "calorieBreakdown": {
+            "type": "object",
+            "description": "칼로리 세부 정보"
+          }
+        },
+        "required": [
+          "content"
+        ]
+      },
+      "BadRequestResponseDto": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "number",
+            "example": 400
+          },
+          "error": {
+            "type": "string",
+            "example": "Bad Request"
+          },
+          "message": {
+            "type": "string",
+            "example": "Content should not be empty"
+          },
+          "errorCode": {
+            "type": "string",
+            "example": "INVALID_INPUT"
+          },
+          "timestamp": {
+            "type": "string",
+            "example": "2023-05-20T12:34:56.789Z"
+          },
+          "path": {
+            "type": "string",
+            "example": "/auth/login"
+          }
+        },
+        "required": [
+          "statusCode",
+          "error",
+          "message",
+          "errorCode",
+          "timestamp",
+          "path"
+        ]
+      },
+      "UnauthorizedResponseDto": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "number",
+            "example": 401
+          },
+          "error": {
+            "type": "string",
+            "example": "Unauthorized"
+          },
+          "message": {
+            "type": "string",
+            "example": "User not authenticated"
+          },
+          "errorCode": {
+            "type": "string",
+            "example": "UNAUTHORIZED"
+          },
+          "timestamp": {
+            "type": "string",
+            "example": "2023-05-20T12:34:56.789Z"
+          },
+          "path": {
+            "type": "string",
+            "example": "/auth/login"
+          }
+        },
+        "required": [
+          "statusCode",
+          "error",
+          "message",
+          "errorCode",
+          "timestamp",
+          "path"
+        ]
+      },
+      "ForbiddenResponseDto": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "number",
+            "example": 403
+          },
+          "error": {
+            "type": "string",
+            "example": "Forbidden"
+          },
+          "message": {
+            "type": "string",
+            "example": "You are not authorized to access this resource"
+          },
+          "errorCode": {
+            "type": "string",
+            "example": "FORBIDDEN"
+          },
+          "timestamp": {
+            "type": "string",
+            "example": "2023-05-20T12:34:56.789Z"
+          },
+          "path": {
+            "type": "string",
+            "example": "/auth/login"
+          }
+        },
+        "required": [
+          "statusCode",
+          "error",
+          "message",
+          "errorCode",
+          "timestamp",
+          "path"
+        ]
+      },
+      "InternalServerErrorResponseDto": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "number",
+            "example": 500
+          },
+          "error": {
+            "type": "string",
+            "example": "Internal Server Error"
+          },
+          "message": {
+            "type": "string",
+            "example": "An unexpected error occurred"
+          },
+          "errorCode": {
+            "type": "string",
+            "example": "SERVER_ERROR"
+          },
+          "timestamp": {
+            "type": "string",
+            "example": "2023-05-20T12:34:56.789Z"
+          },
+          "path": {
+            "type": "string",
+            "example": "/auth/login"
+          }
+        },
+        "required": [
+          "statusCode",
+          "error",
+          "message",
+          "errorCode",
+          "timestamp",
+          "path"
+        ]
+      },
+      "NotFoundResponseDto": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "number",
+            "example": 404
+          },
+          "error": {
+            "type": "string",
+            "example": "Not Found"
+          },
+          "message": {
+            "type": "string",
+            "example": "Diary not found"
+          },
+          "errorCode": {
+            "type": "string",
+            "example": "NOT_FOUND"
+          },
+          "timestamp": {
+            "type": "string",
+            "example": "2023-05-20T12:34:56.789Z"
+          },
+          "path": {
+            "type": "string",
+            "example": "/auth/login"
+          }
+        },
+        "required": [
+          "statusCode",
+          "error",
+          "message",
+          "errorCode",
+          "timestamp",
+          "path"
+        ]
+      },
+      "FoodAnalysisDto": {
+        "type": "object",
+        "properties": {
+          "image": {
+            "type": "string",
+            "format": "binary",
+            "description": "분석할 음식 이미지 파일"
+          },
+          "description": {
+            "type": "string",
+            "description": "음식에 대한 추가 설명",
+            "example": "오늘 점심으로 먹은 치킨 샐러드입니다."
+          }
+        },
+        "required": [
+          "image",
+          "description"
+        ]
+      }
+    }
+  }
+}
