@@ -1,18 +1,21 @@
 import {
+  CallHandler,
+  ExecutionContext,
   Injectable,
   NestInterceptor,
-  ExecutionContext,
-  CallHandler,
 } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Reflector } from '@nestjs/core';
 import { ApiResponseDto } from '../dto/api-response.dto';
 
 // Decorator to exclude endpoints from auto-wrapping
 export const SKIP_RESPONSE_WRAPPER = 'skipResponseWrapper';
-export const SkipResponseWrapper = () =>
-  Reflect.defineMetadata(SKIP_RESPONSE_WRAPPER, true, {});
+export const SkipResponseWrapper =
+  () => (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
+    Reflect.defineMetadata(SKIP_RESPONSE_WRAPPER, true, descriptor.value);
+    return descriptor;
+  };
 
 @Injectable()
 export class ResponseInterceptor<T>
@@ -51,11 +54,11 @@ export class ResponseInterceptor<T>
           Object.keys(data).length === 1
         ) {
           // Simple message responses like { message: "..." }
-          return new ApiResponseDto(null, data.message, path);
+          return new ApiResponseDto({ message: data.message }, path);
         }
 
         // Wrap regular data responses
-        return new ApiResponseDto(data, undefined, path);
+        return new ApiResponseDto(data, path);
       }),
     );
   }

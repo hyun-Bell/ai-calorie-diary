@@ -5,29 +5,37 @@ export class ApiResponseDto<T = any> {
   success: boolean;
 
   @ApiProperty()
-  data?: T;
+  data: T;
 
-  @ApiProperty({ example: 'Operation completed successfully' })
-  message?: string;
+  @ApiProperty({
+    example: {
+      timestamp: '2023-05-20T12:34:56.789Z',
+      path: '/api/endpoint',
+    },
+    required: false,
+  })
+  meta?: {
+    timestamp: string;
+    path?: string;
+    [key: string]: any;
+  };
 
-  @ApiProperty({ example: '2023-05-20T12:34:56.789Z' })
-  timestamp: string;
-
-  @ApiProperty({ example: '/api/endpoint' })
-  path?: string;
-
-  constructor(data?: T, message?: string, path?: string) {
+  constructor(data: T, path?: string, additionalMeta?: Record<string, any>) {
     this.success = true;
     this.data = data;
-    this.message = message;
-    this.timestamp = new Date().toISOString();
-    this.path = path;
+    this.meta = {
+      timestamp: new Date().toISOString(),
+      ...(path && { path }),
+      ...additionalMeta,
+    };
   }
 }
 
 export class PaginatedResponseDto<T = any> extends ApiResponseDto<T[]> {
   @ApiProperty({
     example: {
+      timestamp: '2023-05-20T12:34:56.789Z',
+      path: '/api/endpoint',
       page: 1,
       limit: 10,
       total: 100,
@@ -35,10 +43,13 @@ export class PaginatedResponseDto<T = any> extends ApiResponseDto<T[]> {
     },
   })
   meta: {
+    timestamp: string;
+    path?: string;
     page: number;
     limit: number;
     total: number;
     totalPages: number;
+    [key: string]: any;
   };
 
   constructor(
@@ -46,15 +57,13 @@ export class PaginatedResponseDto<T = any> extends ApiResponseDto<T[]> {
     page: number,
     limit: number,
     total: number,
-    message?: string,
     path?: string,
   ) {
-    super(data, message, path);
-    this.meta = {
+    super(data, path, {
       page,
       limit,
       total,
       totalPages: Math.ceil(total / limit),
-    };
+    });
   }
 }
