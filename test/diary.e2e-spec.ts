@@ -1,17 +1,21 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
-import { AppModule } from '../src/app.module';
-import { PrismaService } from '@common/prisma/prisma.service';
-import { JwtService } from '@nestjs/jwt';
-import * as path from 'node:path';
-import * as fs from 'node:fs';
-import { v4 as uuidv4 } from 'uuid';
-import {
-  FileStorageService,
-  FILE_STORAGE_SERVICE_TOKEN,
-} from '@common/storage/file-storage.interface';
 import { FoodBreakdown } from '@common/dto/Ingredient.dto';
+import { AllExceptionsFilter } from '@common/filters/all-exceptions.filter';
+import { ResponseInterceptor } from '@common/interceptors/response.interceptor';
+import { CustomLoggerService } from '@common/logger/custom-logger.service';
+import { PrismaService } from '@common/prisma/prisma.service';
+import {
+  FILE_STORAGE_SERVICE_TOKEN,
+  FileStorageService,
+} from '@common/storage/file-storage.interface';
+import { INestApplication } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { JwtService } from '@nestjs/jwt';
+import { Test, TestingModule } from '@nestjs/testing';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import * as request from 'supertest';
+import { v4 as uuidv4 } from 'uuid';
+import { AppModule } from '../src/app.module';
 
 jest.setTimeout(300000);
 
@@ -35,6 +39,14 @@ describe('DiaryController (e2e)', () => {
       })
       .compile();
     app = moduleFixture.createNestApplication();
+
+    const reflector = app.get(Reflector);
+    const logger = new CustomLoggerService();
+
+    app.useGlobalFilters(new AllExceptionsFilter(logger));
+    app.useGlobalInterceptors(new ResponseInterceptor(reflector));
+    app.setGlobalPrefix('api');
+
     await app.init();
 
     prismaService = app.get(PrismaService);
@@ -93,7 +105,7 @@ describe('DiaryController (e2e)', () => {
       };
 
       return request(app.getHttpServer())
-        .post('/diary')
+        .post('/api/diary')
         .set('Authorization', `Bearer ${authToken}`)
         .send({
           content: 'Test diary content',
@@ -102,11 +114,13 @@ describe('DiaryController (e2e)', () => {
         })
         .expect(201)
         .expect((res) => {
-          expect(res.body).toHaveProperty('id');
-          expect(res.body.content).toBe('Test diary content');
-          expect(res.body.userId).toBe(userId);
-          expect(res.body.totalCalories).toBe(500);
-          expect(res.body.calorieBreakdown).toEqual(calorieBreakdown);
+          expect(res.body).toHaveProperty('success', true);
+          expect(res.body).toHaveProperty('data');
+          expect(res.body.data).toHaveProperty('id');
+          expect(res.body.data.content).toBe('Test diary content');
+          expect(res.body.data.userId).toBe(userId);
+          expect(res.body.data.totalCalories).toBe(500);
+          expect(res.body.data.calorieBreakdown).toEqual(calorieBreakdown);
         });
     });
 
@@ -128,7 +142,7 @@ describe('DiaryController (e2e)', () => {
       };
 
       return request(app.getHttpServer())
-        .post('/diary')
+        .post('/api/diary')
         .set('Authorization', `Bearer ${authToken}`)
         .attach('image', fileBuffer, 'icon.png')
         .field('content', 'Test diary content with image')
@@ -136,10 +150,12 @@ describe('DiaryController (e2e)', () => {
         .field('calorieBreakdown', JSON.stringify(calorieBreakdown))
         .expect(201)
         .expect((res) => {
-          expect(res.body).toHaveProperty('imageUrl');
-          expect(res.body.content).toBe('Test diary content with image');
-          expect(res.body.totalCalories).toBe(500);
-          expect(res.body.calorieBreakdown).toEqual(calorieBreakdown);
+          expect(res.body).toHaveProperty('success', true);
+          expect(res.body).toHaveProperty('data');
+          expect(res.body.data).toHaveProperty('imageUrl');
+          expect(res.body.data.content).toBe('Test diary content with image');
+          expect(res.body.data.totalCalories).toBe(500);
+          expect(res.body.data.calorieBreakdown).toEqual(calorieBreakdown);
         });
     });
   });
@@ -188,14 +204,16 @@ describe('DiaryController (e2e)', () => {
       });
 
       const response = await request(app.getHttpServer())
-        .get('/diary')
+        .get('/api/diary')
         .set('Authorization', `Bearer ${authToken}`)
         .expect(200);
 
-      expect(Array.isArray(response.body)).toBe(true);
-      expect(response.body.length).toBe(diariesToCreate.length);
+      expect(response.body).toHaveProperty('success', true);
+      expect(response.body).toHaveProperty('data');
+      expect(Array.isArray(response.body.data)).toBe(true);
+      expect(response.body.data.length).toBe(diariesToCreate.length);
 
-      response.body.forEach((diary, index) => {
+      response.body.data.forEach((diary, index) => {
         expect(diary).toHaveProperty('id');
         expect(diary).toHaveProperty('content');
         expect(diary.content).toBe(diariesToCreate[index].content);
@@ -239,15 +257,17 @@ describe('DiaryController (e2e)', () => {
       });
 
       return request(app.getHttpServer())
-        .get(`/diary/${diary.id}`)
+        .get(`/api/diary/${diary.id}`)
         .set('Authorization', `Bearer ${authToken}`)
         .expect(200)
         .expect((res) => {
-          expect(res.body.id).toBe(diary.id);
-          expect(res.body.content).toBe('Specific diary content');
-          expect(res.body.userId).toBe(userId);
-          expect(res.body.totalCalories).toBe(500);
-          expect(res.body.calorieBreakdown).toEqual(calorieBreakdown);
+          expect(res.body).toHaveProperty('success', true);
+          expect(res.body).toHaveProperty('data');
+          expect(res.body.data.id).toBe(diary.id);
+          expect(res.body.data.content).toBe('Specific diary content');
+          expect(res.body.data.userId).toBe(userId);
+          expect(res.body.data.totalCalories).toBe(500);
+          expect(res.body.data.calorieBreakdown).toEqual(calorieBreakdown);
         });
     });
   });
@@ -302,7 +322,7 @@ describe('DiaryController (e2e)', () => {
       });
 
       const response = await request(app.getHttpServer())
-        .get('/diary/period')
+        .get('/api/diary/period')
         .query({
           startDate: startDate.toISOString(),
           endDate: endDate.toISOString(),
@@ -310,11 +330,12 @@ describe('DiaryController (e2e)', () => {
         .set('Authorization', `Bearer ${authToken}`);
 
       expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty('success', true);
+      expect(response.body).toHaveProperty('data');
+      expect(Array.isArray(response.body.data)).toBe(true);
+      expect(response.body.data.length).toBe(2); // 기간 내의 일기만 2개여야 함
 
-      expect(Array.isArray(response.body)).toBe(true);
-      expect(response.body.length).toBe(2); // 기간 내의 일기만 2개여야 함
-
-      response.body.forEach((diary) => {
+      response.body.data.forEach((diary) => {
         expect(diary).toHaveProperty('id');
         expect(diary).toHaveProperty('content');
         expect(diary.userId).toBe(userId);
@@ -327,11 +348,14 @@ describe('DiaryController (e2e)', () => {
     });
 
     it('should return 400 for invalid date format', async () => {
-      return request(app.getHttpServer())
-        .get('/diary/period')
+      const response = await request(app.getHttpServer())
+        .get('/api/diary/period')
         .query({ startDate: 'invalid-date', endDate: 'invalid-date' })
         .set('Authorization', `Bearer ${authToken}`)
         .expect(400);
+
+      expect(response.body).toHaveProperty('success', false);
+      expect(response.body).toHaveProperty('error');
     });
 
     it('should return empty array when no diaries in the specified period', async () => {
@@ -339,7 +363,7 @@ describe('DiaryController (e2e)', () => {
       const endDate = new Date('2024-12-31T23:59:59.999Z');
 
       const response = await request(app.getHttpServer())
-        .get('/diary/period')
+        .get('/api/diary/period')
         .query({
           startDate: startDate.toISOString(),
           endDate: endDate.toISOString(),
@@ -347,8 +371,10 @@ describe('DiaryController (e2e)', () => {
         .set('Authorization', `Bearer ${authToken}`)
         .expect(200);
 
-      expect(Array.isArray(response.body)).toBe(true);
-      expect(response.body.length).toBe(0);
+      expect(response.body).toHaveProperty('success', true);
+      expect(response.body).toHaveProperty('data');
+      expect(Array.isArray(response.body.data)).toBe(true);
+      expect(response.body.data.length).toBe(0);
     });
   });
 
@@ -390,7 +416,7 @@ describe('DiaryController (e2e)', () => {
       };
 
       return request(app.getHttpServer())
-        .put(`/diary/${diary.id}`)
+        .put(`/api/diary/${diary.id}`)
         .set('Authorization', `Bearer ${authToken}`)
         .send({
           content: 'Updated content',
@@ -399,10 +425,14 @@ describe('DiaryController (e2e)', () => {
         })
         .expect(200)
         .expect((res) => {
-          expect(res.body.id).toBe(diary.id);
-          expect(res.body.content).toBe('Updated content');
-          expect(res.body.totalCalories).toBe(600);
-          expect(res.body.calorieBreakdown).toEqual(updatedCalorieBreakdown);
+          expect(res.body).toHaveProperty('success', true);
+          expect(res.body).toHaveProperty('data');
+          expect(res.body.data.id).toBe(diary.id);
+          expect(res.body.data.content).toBe('Updated content');
+          expect(res.body.data.totalCalories).toBe(600);
+          expect(res.body.data.calorieBreakdown).toEqual(
+            updatedCalorieBreakdown,
+          );
         });
     });
   });
@@ -435,10 +465,17 @@ describe('DiaryController (e2e)', () => {
 
       fileStorageService.deleteFile.mockResolvedValue(undefined);
 
-      await request(app.getHttpServer())
-        .delete(`/diary/${diary.id}`)
+      const response = await request(app.getHttpServer())
+        .delete(`/api/diary/${diary.id}`)
         .set('Authorization', `Bearer ${authToken}`)
         .expect(200);
+
+      expect(response.body).toHaveProperty('success', true);
+      expect(response.body).toHaveProperty('data');
+      expect(response.body.data).toHaveProperty(
+        'message',
+        'Diary successfully deleted',
+      );
 
       const deletedDiary = await prismaService.diary.findUnique({
         where: { id: diary.id },
@@ -471,10 +508,17 @@ describe('DiaryController (e2e)', () => {
         },
       });
 
-      await request(app.getHttpServer())
-        .delete(`/diary/${diary.id}`)
+      const response = await request(app.getHttpServer())
+        .delete(`/api/diary/${diary.id}`)
         .set('Authorization', `Bearer ${authToken}`)
         .expect(200);
+
+      expect(response.body).toHaveProperty('success', true);
+      expect(response.body).toHaveProperty('data');
+      expect(response.body.data).toHaveProperty(
+        'message',
+        'Diary successfully deleted',
+      );
 
       const deletedDiary = await prismaService.diary.findUnique({
         where: { id: diary.id },
@@ -483,24 +527,38 @@ describe('DiaryController (e2e)', () => {
       expect(fileStorageService.deleteFile).not.toHaveBeenCalled();
     });
 
-    it('should return 404 for deleting non-existent diary', () => {
-      return request(app.getHttpServer())
-        .delete(`/diary/${uuidv4()}`)
+    it('should return 404 for deleting non-existent diary', async () => {
+      const response = await request(app.getHttpServer())
+        .delete(`/api/diary/${uuidv4()}`)
         .set('Authorization', `Bearer ${authToken}`)
         .expect(404);
+
+      expect(response.body).toHaveProperty('success', false);
+      expect(response.body).toHaveProperty('error');
+      expect(response.body.error).toHaveProperty('code', 'NOT_FOUND');
     });
   });
 
   describe('Authentication and Authorization', () => {
-    it('should return 401 when no token is provided', () => {
-      return request(app.getHttpServer()).get('/diary').expect(401);
+    it('should return 401 when no token is provided', async () => {
+      const response = await request(app.getHttpServer())
+        .get('/api/diary')
+        .expect(401);
+
+      expect(response.body).toHaveProperty('success', false);
+      expect(response.body).toHaveProperty('error');
+      expect(response.body.error).toHaveProperty('code', 'UNAUTHORIZED');
     });
 
-    it('should return 401 when an invalid token is provided', () => {
-      return request(app.getHttpServer())
-        .get('/diary')
+    it('should return 401 when an invalid token is provided', async () => {
+      const response = await request(app.getHttpServer())
+        .get('/api/diary')
         .set('Authorization', 'Bearer invalidtoken')
         .expect(401);
+
+      expect(response.body).toHaveProperty('success', false);
+      expect(response.body).toHaveProperty('error');
+      expect(response.body.error).toHaveProperty('code', 'UNAUTHORIZED');
     });
 
     it("should return 403 when trying to access another user's diary", async () => {
@@ -533,17 +591,21 @@ describe('DiaryController (e2e)', () => {
         },
       });
 
-      return request(app.getHttpServer())
-        .get(`/diary/${otherUserDiary.id}`)
+      const response = await request(app.getHttpServer())
+        .get(`/api/diary/${otherUserDiary.id}`)
         .set('Authorization', `Bearer ${authToken}`)
         .expect(403);
+
+      expect(response.body).toHaveProperty('success', false);
+      expect(response.body).toHaveProperty('error');
+      expect(response.body.error).toHaveProperty('code', 'FORBIDDEN');
     });
   });
 
   describe('Input Validation', () => {
     it.skip('should return 400 when creating a diary with invalid data', () => {
       return request(app.getHttpServer())
-        .post('/diary')
+        .post('/api/diary')
         .set('Authorization', `Bearer ${authToken}`)
         .send({
           content: '', // Empty content
@@ -564,7 +626,7 @@ describe('DiaryController (e2e)', () => {
       });
 
       return request(app.getHttpServer())
-        .put(`/diary/${diary.id}`)
+        .put(`/api/diary/${diary.id}`)
         .set('Authorization', `Bearer ${authToken}`)
         .send({
           content: '', // Empty content
@@ -581,7 +643,7 @@ describe('DiaryController (e2e)', () => {
       const longContent = 'a'.repeat(maxContentLength);
 
       const response = await request(app.getHttpServer())
-        .post('/diary')
+        .post('/api/diary')
         .set('Authorization', `Bearer ${authToken}`)
         .send({
           content: longContent,
@@ -590,7 +652,9 @@ describe('DiaryController (e2e)', () => {
         })
         .expect(201);
 
-      expect(response.body.content).toBe(longContent);
+      expect(response.body).toHaveProperty('success', true);
+      expect(response.body).toHaveProperty('data');
+      expect(response.body.data.content).toBe(longContent);
     });
 
     it('should handle creating a diary with very precise calorie values', async () => {
@@ -604,7 +668,7 @@ describe('DiaryController (e2e)', () => {
       };
 
       const response = await request(app.getHttpServer())
-        .post('/diary')
+        .post('/api/diary')
         .set('Authorization', `Bearer ${authToken}`)
         .send({
           content: 'Diary with precise calories',
@@ -613,8 +677,15 @@ describe('DiaryController (e2e)', () => {
         })
         .expect(201);
 
-      expect(response.body.totalCalories).toBeCloseTo(preciseTotalCalories, 5);
-      expect(response.body.calorieBreakdown).toEqual(preciseCalorieBreakdown);
+      expect(response.body).toHaveProperty('success', true);
+      expect(response.body).toHaveProperty('data');
+      expect(response.body.data.totalCalories).toBeCloseTo(
+        preciseTotalCalories,
+        5,
+      );
+      expect(response.body.data.calorieBreakdown).toEqual(
+        preciseCalorieBreakdown,
+      );
     });
   });
 });

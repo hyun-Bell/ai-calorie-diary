@@ -1,144 +1,196 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from '../src/app.module';
 import { PrismaService } from '@common/prisma/prisma.service';
-import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
+import {
+  createE2ETestApp,
+  closeE2ETestApp,
+  E2ETestContext,
+} from './utils/helpers/e2e-setup.helper';
+import { DatabaseHelper } from './utils/helpers/database.helper';
+import { AuthHelper } from './utils/helpers/auth.helper';
+import { AssertionHelper } from './utils/helpers/assertion.helper';
+import { UserFactory } from './utils/factories/user.factory';
+import {
+  API_ENDPOINTS,
+  HTTP_STATUS,
+  TEST_USERS,
+  TIMEOUTS,
+} from './utils/constants';
 
-jest.setTimeout(30000); // 30초로 타임아웃 설정
+jest.setTimeout(TIMEOUTS.LONG_RUNNING);
+
 describe('AuthController (e2e)', () => {
-  let app: INestApplication;
-  let prismaService: PrismaService;
+  let context: E2ETestContext;
+  let dbHelper: DatabaseHelper;
+  let authHelper: AuthHelper;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe());
-    await app.init();
-
-    prismaService = app.get(PrismaService);
+    context = await createE2ETestApp();
+    const prismaService = context.app.get(PrismaService);
+    dbHelper = new DatabaseHelper(prismaService);
+    authHelper = new AuthHelper(context.app, context.app.get(JwtService));
   });
 
   beforeEach(async () => {
-    // 각 테스트 후 데이터 정리
-    await prismaService.$transaction(async (prisma) => {
-      await prisma.diary.deleteMany();
-      await prisma.user.deleteMany();
-    });
+    await dbHelper.cleanDatabase();
+    UserFactory.reset();
   });
 
   afterAll(async () => {
-    await prismaService.$disconnect();
-    await app.close();
+    await dbHelper.disconnect();
+    await closeE2ETestApp(context);
   });
 
-  it('/auth/register (POST)', async () => {
-    const response = await request(app.getHttpServer())
-      .post('/auth/register')
-      .send({ email: 'test@example.com', password: 'password123' })
-      .expect(201);
+  describe('POST /auth/register', () => {
+    it('should register a new user successfully', async () => {
+      const newUser = UserFactory.create();
 
-    expect(response.body).toHaveProperty('id');
-    expect(response.body).toHaveProperty('email', 'test@example.com');
-    expect(response.body).toHaveProperty('accessToken');
-    expect(response.body).toHaveProperty('refreshToken');
-  });
+      const response = await request(context.app.getHttpServer())
+        .post(API_ENDPOINTS.AUTH.REGISTER)
+        .send({
+          email: newUser.email,
+          password: TEST_USERS.DEFAULT.password,
+        })
+        .expect(HTTP_STATUS.CREATED);
 
-  it('/auth/login (POST) - successful login', async () => {
-    const password = 'password123';
-    const email = 'test_login@example.com';
-    await prismaService.$transaction(async (prisma) => {
-      const hashedPassword = await bcrypt.hash(password, 10);
-      await prisma.user.create({
-        data: {
-          email,
-          password: hashedPassword,
-        },
+      AssertionHelper.assertUserStructure(response.body);
+      AssertionHelper.assertAuthTokensStructure(response.body);
+      expect(response.body.email).toBe(newUser.email);
+    });
+
+    it('should return error when email already exists', async () => {
+      await dbHelper.createTestUser({
+        email: TEST_USERS.DEFAULT.email,
+        password: await AuthHelper.hashPassword(TEST_USERS.DEFAULT.password),
       });
+
+      const response = await request(context.app.getHttpServer())
+        .post(API_ENDPOINTS.AUTH.REGISTER)
+        .send(TEST_USERS.DEFAULT)
+        .expect(HTTP_STATUS.CONFLICT);
+
+      AssertionHelper.assertErrorResponse(
+        response,
+        HTTP_STATUS.CONFLICT,
+        'CONFLICT',
+      );
     });
 
-    const response = await request(app.getHttpServer())
-      .post('/auth/login')
-      .send({ email, password })
-      .expect(200);
+    it('should validate email format', async () => {
+      const response = await request(context.app.getHttpServer())
+        .post(API_ENDPOINTS.AUTH.REGISTER)
+        .send({
+          email: 'invalid-email',
+          password: TEST_USERS.DEFAULT.password,
+        })
+        .expect(HTTP_STATUS.BAD_REQUEST);
 
-    expect(response.body).toHaveProperty('accessToken');
-    expect(response.body).toHaveProperty('refreshToken');
+      AssertionHelper.assertErrorResponse(
+        response,
+        HTTP_STATUS.BAD_REQUEST,
+        'BAD_REQUEST',
+      );
+    });
   });
 
-  it('/auth/login (POST) - invalid credentials', async () => {
-    await request(app.getHttpServer())
-      .post('/auth/login')
-      .send({ email: 'wrong@example.com', password: 'wrongpassword' })
-      .expect(401);
-  });
-
-  it('/auth/refresh (POST) - successful token refresh', async () => {
-    // 먼저 사용자를 등록하고 로그인합니다
-    const password = 'password123';
-    const email = 'test@example.com';
-    const hashedPassword = await bcrypt.hash(password, 10);
-    await prismaService.user.create({
-      data: {
-        email,
+  describe('POST /auth/login', () => {
+    it('should login with valid credentials', async () => {
+      const hashedPassword = await AuthHelper.hashPassword(
+        TEST_USERS.DEFAULT.password,
+      );
+      await dbHelper.createTestUser({
+        ...TEST_USERS.DEFAULT,
         password: hashedPassword,
-      },
+      });
+
+      const response = await request(context.app.getHttpServer())
+        .post(API_ENDPOINTS.AUTH.LOGIN)
+        .send(TEST_USERS.DEFAULT)
+        .expect(HTTP_STATUS.OK);
+
+      AssertionHelper.assertAuthTokensStructure(response.body);
+      expect(response.body).toHaveProperty('user');
+      expect(response.body.user.email).toBe(TEST_USERS.DEFAULT.email);
     });
 
-    const loginResponse = await request(app.getHttpServer())
-      .post('/auth/login')
-      .send({ email, password })
-      .expect(200);
+    it('should return error with invalid credentials', async () => {
+      const response = await request(context.app.getHttpServer())
+        .post(API_ENDPOINTS.AUTH.LOGIN)
+        .send({
+          email: 'nonexistent@example.com',
+          password: 'wrongpassword',
+        })
+        .expect(HTTP_STATUS.UNAUTHORIZED);
 
-    const { refreshToken } = loginResponse.body;
-
-    const refreshResponse = await request(app.getHttpServer())
-      .post('/auth/refresh')
-      .send({ refreshToken })
-      .expect(200);
-
-    expect(refreshResponse.body).toHaveProperty('accessToken');
-    expect(refreshResponse.body).toHaveProperty('refreshToken');
+      AssertionHelper.assertErrorResponse(
+        response,
+        HTTP_STATUS.UNAUTHORIZED,
+        'UNAUTHORIZED',
+      );
+    });
   });
 
-  it('/auth/refresh (POST) - invalid refresh token', async () => {
-    await request(app.getHttpServer())
-      .post('/auth/refresh')
-      .send({ refreshToken: 'invalid_token' })
-      .expect(401);
-  });
+  describe('POST /auth/refresh', () => {
+    it('should refresh tokens successfully', async () => {
+      const authenticatedUser = await createAndLoginUser();
 
-  it('/auth/logout (POST) - logout user', async () => {
-    // 사용자 등록 및 로그인
-    const password = 'password123';
-    const email = 'test_logout@example.com';
-    const hashedPassword = await bcrypt.hash(password, 10);
-    await prismaService.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-      },
+      const response = await request(context.app.getHttpServer())
+        .post(API_ENDPOINTS.AUTH.REFRESH)
+        .send({ refreshToken: authenticatedUser.tokens.refreshToken })
+        .expect(HTTP_STATUS.OK);
+
+      AssertionHelper.assertAuthTokensStructure(response.body);
     });
 
-    const loginResponse = await request(app.getHttpServer())
-      .post('/auth/login')
-      .send({ email, password })
-      .expect(200);
+    it('should return error with invalid refresh token', async () => {
+      const response = await request(context.app.getHttpServer())
+        .post(API_ENDPOINTS.AUTH.REFRESH)
+        .send({ refreshToken: 'invalid_token' })
+        .expect(HTTP_STATUS.UNAUTHORIZED);
 
-    const { accessToken } = loginResponse.body;
-
-    await request(app.getHttpServer())
-      .post('/auth/logout')
-      .set('Authorization', `Bearer ${accessToken}`)
-      .expect(200);
-
-    // 로그아웃 후 /me 엔드포인트에 접근 시 401 에러가 발생해야 함
-    // await request(app.getHttpServer())
-    //   .get('/auth/me')
-    //   .set('Authorization', `Bearer ${accessToken}`)
-    //   .expect(401);
+      AssertionHelper.assertErrorResponse(
+        response,
+        HTTP_STATUS.UNAUTHORIZED,
+        'UNAUTHORIZED',
+      );
+    });
   });
+
+  describe('POST /auth/logout', () => {
+    it('should logout successfully', async () => {
+      const authenticatedUser = await createAndLoginUser();
+
+      const response = await request(context.app.getHttpServer())
+        .post(API_ENDPOINTS.AUTH.LOGOUT)
+        .set('Authorization', `Bearer ${authenticatedUser.tokens.accessToken}`)
+        .expect(HTTP_STATUS.OK);
+
+      AssertionHelper.assertSuccessResponse(response, HTTP_STATUS.OK);
+      expect(response.body.data.message).toBe('Logout successful');
+    });
+
+    it('should return error when not authenticated', async () => {
+      const response = await request(context.app.getHttpServer())
+        .post(API_ENDPOINTS.AUTH.LOGOUT)
+        .expect(HTTP_STATUS.UNAUTHORIZED);
+
+      AssertionHelper.assertErrorResponse(response, HTTP_STATUS.UNAUTHORIZED);
+    });
+  });
+
+  // Helper function to create and login a user
+  async function createAndLoginUser() {
+    const hashedPassword = await AuthHelper.hashPassword(
+      TEST_USERS.SECONDARY.password,
+    );
+    await dbHelper.createTestUser({
+      ...TEST_USERS.SECONDARY,
+      password: hashedPassword,
+    });
+
+    return authHelper.loginUser(
+      TEST_USERS.SECONDARY.email,
+      TEST_USERS.SECONDARY.password,
+    );
+  }
 });
