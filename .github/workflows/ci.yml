@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 permissions:
   issues: write
@@ -34,17 +34,17 @@ jobs:
     env:
       # Database
       DATABASE_URL: postgresql://postgres:guswhd12@localhost:5432/claude-cal-diary?schema=public
-      
+
       # JWT
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
       JWT_REFRESH_SECRET: ${{ secrets.JWT_REFRESH_SECRET }}
-      
+
       # AWS
       AWS_REGION: ${{ secrets.AWS_REGION }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_S3_BUCKET_NAME: ${{ secrets.AWS_S3_BUCKET_NAME }}
-      
+
       # OpenAI - GitHub에서 목업 여부 제어
       USE_MOCK_OPENAI: ${{ vars.USE_MOCK_OPENAI || 'true' }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
@@ -129,7 +129,7 @@ jobs:
             local testFile=$1
             local outcome="success"
             local results=$(cat $testFile)
-          
+
             for test in $(echo "$results" | jq -r '.testResults[] | .assertionResults[] | @base64'); do
               _jq() {
                 echo ${test} | base64 --decode | jq -r ${1}
@@ -141,7 +141,7 @@ jobs:
                 break
               fi
             done
-          
+
             echo $outcome
           }
 
@@ -162,12 +162,12 @@ jobs:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
             const fs = require('fs');
-            
+
             function parseTestResults(filePath) {
               const rawData = fs.readFileSync(filePath, 'utf8');
               const resultData = JSON.parse(rawData);
               let resultString = '';
-            
+
               resultData.testResults.forEach(testFile => {
                 resultString += `\n### ${testFile.name}\n`;
                 testFile.assertionResults.forEach(test => {
@@ -175,30 +175,30 @@ jobs:
                   resultString += `${status} ${test.title}\n`;
                 });
               });
-            
+
               return resultString;
             }
-            
+
             let commentBody = '## 테스트 결과\n';
-            
+
             // 목업 모드 표시
             const useMockOpenAI = process.env.USE_MOCK_OPENAI === 'true';
             commentBody += `\n**OpenAI Mode**: ${useMockOpenAI ? '🎭 Mock (목업)' : '🌐 Real API (실제)'}\n`;
-            
+
             try {
               commentBody += '\n### Unit Tests\n';
               commentBody += parseTestResults('test-results.json');
             } catch (error) {
               commentBody += '\nUnit test results parsing failed.\n';
             }
-            
+
             try {
               commentBody += '\n### E2E Tests (Mock)\n';
               commentBody += parseTestResults('e2e-test-results.json');
             } catch (error) {
               commentBody += '\nE2E test results parsing failed.\n';
             }
-            
+
             // 실제 API 통합 테스트 결과가 있다면 추가
             try {
               if (fs.existsSync('integration-test-results.json')) {
@@ -208,7 +208,7 @@ jobs:
             } catch (error) {
               commentBody += '\nIntegration test results parsing failed.\n';
             }
-            
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,

@@ -56,9 +56,7 @@
             }
           }
         },
-        "tags": [
-          "auth"
-        ]
+        "tags": ["auth"]
       }
     },
     "/auth/refresh": {
@@ -98,9 +96,7 @@
             "description": "토큰 갱신 실패"
           }
         },
-        "tags": [
-          "auth"
-        ]
+        "tags": ["auth"]
       }
     },
     "/auth/register": {
@@ -163,9 +159,7 @@
             }
           }
         },
-        "tags": [
-          "auth"
-        ]
+        "tags": ["auth"]
       }
     },
     "/auth/logout": {
@@ -178,9 +172,7 @@
             "description": "로그아웃 성공"
           }
         },
-        "tags": [
-          "auth"
-        ],
+        "tags": ["auth"],
         "security": [
           {
             "bearer": []
@@ -234,9 +226,7 @@
             "description": "서버 오류"
           }
         },
-        "tags": [
-          "User"
-        ],
+        "tags": ["User"],
         "security": [
           {
             "bearer": []
@@ -281,9 +271,7 @@
             "description": "서버 오류"
           }
         },
-        "tags": [
-          "User"
-        ],
+        "tags": ["User"],
         "security": [
           {
             "bearer": []
@@ -508,9 +496,7 @@
             }
           }
         },
-        "tags": [
-          "diary"
-        ],
+        "tags": ["diary"],
         "security": [
           {
             "bearer": []
@@ -697,9 +683,7 @@
             }
           }
         },
-        "tags": [
-          "diary"
-        ],
+        "tags": ["diary"],
         "security": [
           {
             "bearer": []
@@ -916,9 +900,7 @@
             }
           }
         },
-        "tags": [
-          "diary"
-        ],
+        "tags": ["diary"],
         "security": [
           {
             "bearer": []
@@ -1124,9 +1106,7 @@
             }
           }
         },
-        "tags": [
-          "diary"
-        ],
+        "tags": ["diary"],
         "security": [
           {
             "bearer": []
@@ -1369,9 +1349,7 @@
             }
           }
         },
-        "tags": [
-          "diary"
-        ],
+        "tags": ["diary"],
         "security": [
           {
             "bearer": []
@@ -1459,9 +1437,7 @@
             }
           }
         },
-        "tags": [
-          "diary"
-        ],
+        "tags": ["diary"],
         "security": [
           {
             "bearer": []
@@ -1506,11 +1482,7 @@
                       "items": {
                         "type": "string"
                       },
-                      "example": [
-                        "chicken",
-                        "rice",
-                        "broccoli"
-                      ]
+                      "example": ["chicken", "rice", "broccoli"]
                     },
                     "totalCalories": {
                       "type": "number",
@@ -1631,9 +1603,7 @@
             }
           }
         },
-        "tags": [
-          "food"
-        ],
+        "tags": ["food"],
         "security": [
           {
             "bearer": []
@@ -1695,10 +1665,7 @@
             "description": "사용자 비밀번호"
           }
         },
-        "required": [
-          "email",
-          "password"
-        ]
+        "required": ["email", "password"]
       },
       "ErrorResponseDto": {
         "type": "object",
@@ -1772,13 +1739,7 @@
             "description": "계정 정보 마지막 수정 일시"
           }
         },
-        "required": [
-          "id",
-          "email",
-          "targetCalories",
-          "createdAt",
-          "updatedAt"
-        ]
+        "required": ["id", "email", "targetCalories", "createdAt", "updatedAt"]
       },
       "UpdateTargetCaloriesDto": {
         "type": "object",
@@ -1791,9 +1752,7 @@
             "example": 2000
           }
         },
-        "required": [
-          "targetCalories"
-        ]
+        "required": ["targetCalories"]
       },
       "UpdateTargetCaloriesResponseDto": {
         "type": "object",
@@ -1807,10 +1766,7 @@
             "description": "업데이트된 목표 칼로리"
           }
         },
-        "required": [
-          "message",
-          "targetCalories"
-        ]
+        "required": ["message", "targetCalories"]
       },
       "CreateDiaryDto": {
         "type": "object",
@@ -1833,9 +1789,7 @@
             "description": "칼로리 세부 정보"
           }
         },
-        "required": [
-          "content"
-        ]
+        "required": ["content"]
       },
       "BadRequestResponseDto": {
         "type": "object",
@@ -2036,10 +1990,7 @@
             "example": "오늘 점심으로 먹은 치킨 샐러드입니다."
           }
         },
-        "required": [
-          "image",
-          "description"
-        ]
+        "required": ["image", "description"]
       }
     }
   }

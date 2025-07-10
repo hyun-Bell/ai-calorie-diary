@@ -3,6 +3,7 @@
 </p>
 
 ## Overview
+
 This project is the backend system of an application that allows users to take photos of food and keep a diary. The AI calculates the calories of each food item to help users manage their diet. This project is being created for learning purposes while studying the book [Clean Architecture: A Craftsman's Guide to Software Structure and Design] by Robert C. Martin, and it is built using NestJS, adhering to clean architecture and Domain-Driven Design (DDD) principles.
 
 ## Architecture
@@ -15,7 +16,6 @@ This project follows clean architecture principles and is designed as a microser
 - **Domain-Driven Design (DDD)**: Business logic is organized around domain concepts, with clear boundaries between different contexts.
 
 ## Project Structure
-
 
 ```
 src/
@@ -136,7 +136,7 @@ src/
     ├── domain/
     │   └── user.ts
     └── user.module.ts
-   
+
 ```
 
 ## Installation
@@ -157,7 +157,6 @@ $ pnpm run start:dev
 # production mode
 $ pnpm run start:prod
 ```
-
 
 ## Test
 
@@ -192,12 +191,12 @@ pnpm run db:reset
 
 개발 및 테스트를 위한 사전 생성된 계정들:
 
-| 이메일 | 비밀번호 | 목표 칼로리 | 일기 개수 | 특징 |
-|--------|----------|-------------|-----------|------|
-| `demo@example.com` | `demo123456` | 2000kcal | 4개 | 기본 데모 사용자 |
-| `test@example.com` | `test123456` | 1800kcal | 5개 | 테스트용 사용자 |
-| `user@example.com` | `user123456` | 2200kcal | 6개 | 일반 사용자 |
-| `poweruser@example.com` | `power123456` | 2500kcal | 8개 | 많은 데이터를 가진 사용자 |
+| 이메일                  | 비밀번호      | 목표 칼로리 | 일기 개수 | 특징                      |
+| ----------------------- | ------------- | ----------- | --------- | ------------------------- |
+| `demo@example.com`      | `demo123456`  | 2000kcal    | 4개       | 기본 데모 사용자          |
+| `test@example.com`      | `test123456`  | 1800kcal    | 5개       | 테스트용 사용자           |
+| `user@example.com`      | `user123456`  | 2200kcal    | 6개       | 일반 사용자               |
+| `poweruser@example.com` | `power123456` | 2500kcal    | 8개       | 많은 데이터를 가진 사용자 |
 
 각 계정은 다양한 종류의 음식과 상세한 영양소 분석 데이터를 포함한 일기를 가지고 있습니다.
 
@@ -231,6 +230,7 @@ pnpm run docs:open
 ## API 문서
 
 자세한 API 명세는 다음을 참고하세요:
+
 - **Swagger UI**: http://localhost:3000/api (서버 실행 후)
 - **상세 명세서**: [docs/API_SPECIFICATION.md](./docs/API_SPECIFICATION.md)
 - **자동 생성된 문서**: `pnpm run docs` 실행 후 `docs/` 폴더

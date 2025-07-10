@@ -23,9 +23,7 @@
       "protocol": "inspector",
       "internalConsoleOptions": "neverOpen",
       "sourceMaps": true,
-      "outFiles": [
-        "${workspaceFolder}/ai-calorie-diary/dist/**/*.js"
-      ],
+      "outFiles": ["${workspaceFolder}/ai-calorie-diary/dist/**/*.js"],
       "skipFiles": [
         "<node_internals>/**",
         "${workspaceFolder}/ai-calorie-diary/node_modules/**"
@@ -36,12 +34,7 @@
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/ai-calorie-diary/node_modules/.bin/jest",
-      "args": [
-        "--runInBand",
-        "--no-cache",
-        "--verbose",
-        "--testTimeout=10000"
-      ],
+      "args": ["--runInBand", "--no-cache", "--verbose", "--testTimeout=10000"],
       "cwd": "${workspaceFolder}/ai-calorie-diary",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
@@ -101,9 +94,7 @@
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/ai-calorie-diary/node_modules/.bin/prisma",
-      "args": [
-        "generate"
-      ],
+      "args": ["generate"],
       "cwd": "${workspaceFolder}/ai-calorie-diary",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
@@ -113,10 +104,7 @@
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/ai-calorie-diary/node_modules/.bin/prisma",
-      "args": [
-        "migrate",
-        "dev"
-      ],
+      "args": ["migrate", "dev"],
       "cwd": "${workspaceFolder}/ai-calorie-diary",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
@@ -138,10 +126,7 @@
   "compounds": [
     {
       "name": "🚀 Launch App + Debug Tests",
-      "configurations": [
-        "🚀 Debug NestJS App",
-        "🧪 Debug Jest Unit Tests"
-      ]
+      "configurations": ["🚀 Debug NestJS App", "🧪 Debug Jest Unit Tests"]
     }
   ]
-} 
+}

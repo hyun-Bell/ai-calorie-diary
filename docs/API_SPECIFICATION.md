@@ -36,9 +36,10 @@ Authorization: Bearer <your-jwt-token>
   "data": {
     // 실제 데이터
   },
-  "message": "Operation completed successfully",
-  "timestamp": "2023-05-20T12:34:56.789Z",
-  "path": "/api/endpoint"
+  "meta": {
+    "timestamp": "2023-05-20T12:34:56.789Z",
+    "path": "/api/endpoint"
+  }
 }
 ```
 
@@ -46,10 +47,13 @@ Authorization: Bearer <your-jwt-token>
 
 ```json
 {
-  "statusCode": 400,
-  "error": "Bad Request",
-  "message": "Invalid input data",
-  "errorCode": "INVALID_INPUT",
+  "success": false,
+  "error": {
+    "code": "INVALID_INPUT",
+    "message": "Invalid input data",
+    "statusCode": 400,
+    "details": "Bad Request"
+  },
   "timestamp": "2023-05-20T12:34:56.789Z",
   "path": "/api/endpoint"
 }
@@ -57,14 +61,14 @@ Authorization: Bearer <your-jwt-token>
 
 ## ⚠️ 에러 코드
 
-| Status Code | Error Code | 설명 |
-|-------------|------------|------|
-| 400 | `INVALID_INPUT` | 잘못된 요청 데이터 |
-| 401 | `UNAUTHORIZED` | 인증되지 않은 사용자 |
-| 403 | `FORBIDDEN` | 접근 권한 없음 |
-| 404 | `NOT_FOUND` | 리소스를 찾을 수 없음 |
-| 409 | `CONFLICT` | 데이터 충돌 (예: 이미 존재하는 이메일) |
-| 500 | `SERVER_ERROR` | 서버 내부 오류 |
+| Status Code | Error Code      | 설명                                   |
+| ----------- | --------------- | -------------------------------------- |
+| 400         | `INVALID_INPUT` | 잘못된 요청 데이터                     |
+| 401         | `UNAUTHORIZED`  | 인증되지 않은 사용자                   |
+| 403         | `FORBIDDEN`     | 접근 권한 없음                         |
+| 404         | `NOT_FOUND`     | 리소스를 찾을 수 없음                  |
+| 409         | `CONFLICT`      | 데이터 충돌 (예: 이미 존재하는 이메일) |
+| 500         | `SERVER_ERROR`  | 서버 내부 오류                         |
 
 ## 📊 데이터 타입 정의
 
@@ -83,6 +87,7 @@ type FoodBreakdown = { [ingredient: string]: Ingredient };
 ```
 
 **예시:**
+
 ```json
 {
   "chicken": {
@@ -128,22 +133,36 @@ Content-Type: application/json
 ### 응답
 
 **성공 (201)**
+
 ```json
 {
-  "id": "uuid-string",
-  "email": "user@example.com",
-  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  "success": true,
+  "data": {
+    "id": "uuid-string",
+    "email": "user@example.com",
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  },
+  "meta": {
+    "timestamp": "2023-05-20T12:34:56.789Z",
+    "path": "/api/auth/register"
+  }
 }
 ```
 
 **에러 (409)**
+
 ```json
 {
-  "statusCode": 409,
-  "error": "Conflict",
-  "message": "Email already exists",
-  "errorCode": "CONFLICT"
+  "success": false,
+  "error": {
+    "code": "CONFLICT",
+    "message": "Email already exists",
+    "statusCode": 409,
+    "details": "Conflict"
+  },
+  "timestamp": "2023-05-20T12:34:56.789Z",
+  "path": "/api/auth/register"
 }
 ```
 
@@ -168,24 +187,38 @@ Content-Type: application/json
 ### 응답
 
 **성공 (200)**
+
 ```json
 {
-  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "user": {
-    "id": "uuid-string",
-    "email": "user@example.com"
+  "success": true,
+  "data": {
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "user": {
+      "id": "uuid-string",
+      "email": "user@example.com"
+    }
+  },
+  "meta": {
+    "timestamp": "2023-05-20T12:34:56.789Z",
+    "path": "/api/auth/login"
   }
 }
 ```
 
 **에러 (401)**
+
 ```json
 {
-  "statusCode": 401,
-  "error": "Unauthorized",
-  "message": "Invalid credentials",
-  "errorCode": "UNAUTHORIZED"
+  "success": false,
+  "error": {
+    "code": "UNAUTHORIZED",
+    "message": "Invalid credentials",
+    "statusCode": 401,
+    "details": "Unauthorized"
+  },
+  "timestamp": "2023-05-20T12:34:56.789Z",
+  "path": "/api/auth/login"
 }
 ```
 
@@ -209,10 +242,18 @@ Content-Type: application/json
 ### 응답
 
 **성공 (200)**
+
 ```json
 {
-  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  "success": true,
+  "data": {
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  },
+  "meta": {
+    "timestamp": "2023-05-20T12:34:56.789Z",
+    "path": "/api/auth/refresh"
+  }
 }
 ```
 
@@ -230,9 +271,17 @@ Authorization: Bearer <access-token>
 ### 응답
 
 **성공 (200)**
+
 ```json
 {
-  "message": "Logout successful"
+  "success": true,
+  "data": {
+    "message": "Logout successful"
+  },
+  "meta": {
+    "timestamp": "2023-05-20T12:34:56.789Z",
+    "path": "/api/auth/logout"
+  }
 }
 ```
 
@@ -255,6 +304,7 @@ Content-Type: multipart/form-data
 ```
 
 **Form Data:**
+
 - `content` (string, required): 일기 내용
 - `image` (file, optional): 음식 이미지 파일
 - `totalCalories` (number, optional): 총 칼로리
@@ -263,26 +313,34 @@ Content-Type: multipart/form-data
 ### 응답
 
 **성공 (201)**
+
 ```json
 {
-  "id": "123e4567-e89b-12d3-a456-426614174000",
-  "content": "오늘 점심으로 맛있는 비빔밥을 먹었다.",
-  "imageUrl": "https://example.com/images/bibimbap.jpg",
-  "userId": "98765432-10ab-cdef-ghij-klmnopqrstuv",
-  "createdAt": "2023-06-07T10:30:00Z",
-  "updatedAt": "2023-06-07T10:30:00Z",
-  "totalCalories": 600,
-  "calorieBreakdown": {
-    "밥": {
-      "protein": { "amount": 3, "unit": "g", "calories": 12 },
-      "fat": { "amount": 0.3, "unit": "g", "calories": 2.7 },
-      "carbohydrate": { "amount": 28, "unit": "g", "calories": 112 }
-    },
-    "소고기": {
-      "protein": { "amount": 20, "unit": "g", "calories": 80 },
-      "fat": { "amount": 15, "unit": "g", "calories": 135 },
-      "carbohydrate": { "amount": 0, "unit": "g", "calories": 0 }
+  "success": true,
+  "data": {
+    "id": "123e4567-e89b-12d3-a456-426614174000",
+    "content": "오늘 점심으로 맛있는 비빔밥을 먹었다.",
+    "imageUrl": "https://example.com/images/bibimbap.jpg",
+    "userId": "98765432-10ab-cdef-ghij-klmnopqrstuv",
+    "createdAt": "2023-06-07T10:30:00Z",
+    "updatedAt": "2023-06-07T10:30:00Z",
+    "totalCalories": 600,
+    "calorieBreakdown": {
+      "밥": {
+        "protein": { "amount": 3, "unit": "g", "calories": 12 },
+        "fat": { "amount": 0.3, "unit": "g", "calories": 2.7 },
+        "carbohydrate": { "amount": 28, "unit": "g", "calories": 112 }
+      },
+      "소고기": {
+        "protein": { "amount": 20, "unit": "g", "calories": 80 },
+        "fat": { "amount": 15, "unit": "g", "calories": 135 },
+        "carbohydrate": { "amount": 0, "unit": "g", "calories": 0 }
+      }
     }
+  },
+  "meta": {
+    "timestamp": "2023-05-20T12:34:56.789Z",
+    "path": "/api/diary"
   }
 }
 ```
@@ -301,6 +359,7 @@ Authorization: Bearer <access-token>
 ### 응답
 
 **성공 (200)**
+
 ```json
 [
   {
@@ -311,7 +370,9 @@ Authorization: Bearer <access-token>
     "createdAt": "2023-06-07T10:30:00Z",
     "updatedAt": "2023-06-07T10:30:00Z",
     "totalCalories": 600,
-    "calorieBreakdown": { /* ... */ }
+    "calorieBreakdown": {
+      /* ... */
+    }
   }
 ]
 ```
@@ -328,12 +389,14 @@ Authorization: Bearer <access-token>
 ```
 
 **Query Parameters:**
+
 - `startDate` (string, required): 시작 날짜 (YYYY-MM-DD)
 - `endDate` (string, required): 종료 날짜 (YYYY-MM-DD)
 
 ### 응답
 
 **성공 (200)**
+
 ```json
 [
   {
@@ -344,7 +407,9 @@ Authorization: Bearer <access-token>
     "createdAt": "2023-06-07T10:30:00Z",
     "updatedAt": "2023-06-07T10:30:00Z",
     "totalCalories": 600,
-    "calorieBreakdown": { /* ... */ }
+    "calorieBreakdown": {
+      /* ... */
+    }
   }
 ]
 ```
@@ -363,6 +428,7 @@ Authorization: Bearer <access-token>
 ### 응답
 
 **성공 (200)**
+
 ```json
 {
   "id": "123e4567-e89b-12d3-a456-426614174000",
@@ -372,11 +438,14 @@ Authorization: Bearer <access-token>
   "createdAt": "2023-06-07T10:30:00Z",
   "updatedAt": "2023-06-07T10:30:00Z",
   "totalCalories": 600,
-  "calorieBreakdown": { /* ... */ }
+  "calorieBreakdown": {
+    /* ... */
+  }
 }
 ```
 
 **에러 (404)**
+
 ```json
 {
   "statusCode": 404,
@@ -399,6 +468,7 @@ Content-Type: multipart/form-data
 ```
 
 **Form Data:**
+
 - `content` (string, required): 수정할 일기 내용
 - `image` (file, optional): 수정할 이미지 파일
 - `totalCalories` (number, optional): 수정할 총 칼로리
@@ -407,6 +477,7 @@ Content-Type: multipart/form-data
 ### 응답
 
 **성공 (200)**
+
 ```json
 {
   "id": "123e4567-e89b-12d3-a456-426614174000",
@@ -416,7 +487,9 @@ Content-Type: multipart/form-data
   "createdAt": "2023-06-07T10:30:00Z",
   "updatedAt": "2023-06-07T11:45:00Z",
   "totalCalories": 650,
-  "calorieBreakdown": { /* ... */ }
+  "calorieBreakdown": {
+    /* ... */
+  }
 }
 ```
 
@@ -434,6 +507,7 @@ Authorization: Bearer <access-token>
 ### 응답
 
 **성공 (200)**
+
 ```json
 {
   "message": "Diary successfully deleted"
@@ -457,16 +531,19 @@ Content-Type: multipart/form-data
 ```
 
 **Form Data:**
+
 - `image` (file, required): 분석할 음식 이미지 파일
 - `description` (string, required): 음식에 대한 추가 설명
 
 **파일 제한:**
+
 - 최대 크기: 3MB
 - 지원 형식: JPG, JPEG, PNG
 
 ### 응답
 
 **성공 (201)**
+
 ```json
 {
   "ingredients": ["chicken", "rice", "broccoli"],
@@ -492,6 +569,7 @@ Content-Type: multipart/form-data
 ```
 
 **에러 (400)**
+
 ```json
 {
   "statusCode": 400,
@@ -519,6 +597,7 @@ Authorization: Bearer <access-token>
 ### 응답
 
 **성공 (200)**
+
 ```json
 {
   "id": "uuid-string",
@@ -550,6 +629,7 @@ Content-Type: application/json
 ### 응답
 
 **성공 (200)**
+
 ```json
 {
   "message": "Target calories updated successfully",
@@ -558,6 +638,7 @@ Content-Type: application/json
 ```
 
 **에러 (400)**
+
 ```json
 {
   "statusCode": 400,
@@ -583,8 +664,8 @@ const loginResponse = await fetch('/api/auth/login', {
   },
   body: JSON.stringify({
     email: 'user@example.com',
-    password: 'password123'
-  })
+    password: 'password123',
+  }),
 });
 
 const { accessToken, refreshToken, user } = await loginResponse.json();
@@ -606,9 +687,9 @@ formData.append('calorieBreakdown', JSON.stringify(calorieData));
 const response = await fetch('/api/diary', {
   method: 'POST',
   headers: {
-    'Authorization': `Bearer ${accessToken}`
+    Authorization: `Bearer ${accessToken}`,
   },
-  body: formData
+  body: formData,
 });
 
 const diary = await response.json();
@@ -624,9 +705,9 @@ formData.append('description', '치킨 샐러드');
 const response = await fetch('/api/food/analyze', {
   method: 'POST',
   headers: {
-    'Authorization': `Bearer ${accessToken}`
+    Authorization: `Bearer ${accessToken}`,
   },
-  body: formData
+  body: formData,
 });
 
 const analysisResult = await response.json();
@@ -635,11 +716,14 @@ const analysisResult = await response.json();
 ### 4. 일기 목록 조회
 
 ```typescript
-const response = await fetch('/api/diary/period?startDate=2023-01-01&endDate=2023-12-31', {
-  headers: {
-    'Authorization': `Bearer ${accessToken}`
-  }
-});
+const response = await fetch(
+  '/api/diary/period?startDate=2023-01-01&endDate=2023-12-31',
+  {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  },
+);
 
 const diaries = await response.json();
 ```
@@ -658,6 +742,7 @@ const diaries = await response.json();
 ## 데이터베이스 스키마
 
 ### User 테이블
+
 - `id`: UUID (Primary Key)
 - `email`: String (Unique)
 - `password`: String (Hashed)
@@ -666,6 +751,7 @@ const diaries = await response.json();
 - `updatedAt`: DateTime
 
 ### Diary 테이블
+
 - `id`: UUID (Primary Key)
 - `content`: String
 - `imageUrl`: String (Optional)
@@ -676,6 +762,7 @@ const diaries = await response.json();
 - `updatedAt`: DateTime
 
 ### RefreshToken 테이블
+
 - `id`: UUID (Primary Key)
 - `token`: String (Unique)
 - `userId`: UUID (Foreign Key)
@@ -692,4 +779,4 @@ const diaries = await response.json();
 
 ---
 
-*이 문서는 AI 칼로리 다이어리 백엔드 API v1.0 기준으로 작성되었습니다.* 
+_이 문서는 AI 칼로리 다이어리 백엔드 API v1.0 기준으로 작성되었습니다._

@@ -1,6 +1,6 @@
 # OpenAI API 목업 구현: 개발 비용과 테스트 안정성 잡기
 
-*작성일: 2025-06-15*
+_작성일: 2025-06-15_
 
 ## 문제 상황
 
@@ -119,7 +119,9 @@ export const mockFoodScenarios: MockFoodScenario[] = [
     keywords: ['피자'],
     ingredients: ['피자 도우', '토마토 소스', '모짜렐라 치즈', '페퍼로니'],
     totalCalories: 854, // 영양소 합계와 정확히 일치
-    breakdown: { /* 정확한 영양소 정보 */ }
+    breakdown: {
+      /* 정확한 영양소 정보 */
+    },
   },
   // 다른 시나리오들...
 ];
@@ -210,7 +212,7 @@ OpenAI 말고 Claude, Gemini 등 다른 AI 서비스도 지원할 수 있도록 
 enum AIProvider {
   OPENAI = 'openai',
   CLAUDE = 'claude',
-  GEMINI = 'gemini'
+  GEMINI = 'gemini',
 }
 ```
 
@@ -232,4 +234,4 @@ Clean Architecture나 SOLID 원칙 같은 것들이 왜 중요한지 이론적�
 
 ---
 
-*참고: 목업 데이터의 영양소 계산은 실제 영양학 자료를 참고하여 작성했으나, 의학적 목적으로 사용해서는 안 됩니다.*
+_참고: 목업 데이터의 영양소 계산은 실제 영양학 자료를 참고하여 작성했으나, 의학적 목적으로 사용해서는 안 됩니다._

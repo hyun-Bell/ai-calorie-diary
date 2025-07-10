@@ -42,15 +42,16 @@ Authorization: Bearer <your-jwt-token>
 
 ### USER
 
-
 ## 🚀 사용법
 
 ### 1. 문서 생성
+
 ```bash
 pnpm run docs
 ```
 
 ### 2. 브라우저에서 확인
+
 ```bash
 # HTML 문서 열기
 open docs/index.html
@@ -59,4 +60,3 @@ open docs/index.html
 pnpm run start:dev
 # http://localhost:3000/api
 ```
-
