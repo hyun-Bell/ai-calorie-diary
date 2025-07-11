@@ -61,22 +61,18 @@ export class DiaryController {
     @UploadedFile() image: Express.Multer.File,
     @User('id') userId: string,
   ) {
-    try {
-      const calorieBreakdown =
-        typeof createDiaryDto.calorieBreakdown === 'string'
-          ? JSON.parse(createDiaryDto.calorieBreakdown)
-          : createDiaryDto.calorieBreakdown;
+    const calorieBreakdown =
+      typeof createDiaryDto.calorieBreakdown === 'string'
+        ? JSON.parse(createDiaryDto.calorieBreakdown)
+        : createDiaryDto.calorieBreakdown;
 
-      return this.diaryUseCase.createDiary(
-        createDiaryDto.content,
-        image,
-        userId,
-        createDiaryDto.totalCalories,
-        calorieBreakdown,
-      );
-    } catch (error) {
-      console.log(error);
-    }
+    return this.diaryUseCase.createDiary(
+      createDiaryDto.content,
+      image,
+      userId,
+      createDiaryDto.totalCalories,
+      calorieBreakdown,
+    );
   }
 
   @Get('period')

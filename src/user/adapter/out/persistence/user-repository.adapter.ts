@@ -30,20 +30,15 @@ export class UserRepositoryAdapter implements UserRepositoryPort {
   }
 
   async save(user: User): Promise<User> {
-    console.log(user);
-    try {
-      const updatedUser = await this.prisma.user.update({
-        where: { id: user.id },
-        data: {
-          email: user.email,
-          password: user.password,
-          targetCalories: user.targetCalories,
-        },
-      });
-      return this.mapToUser(updatedUser);
-    } catch (e) {
-      console.log(e);
-    }
+    const updatedUser = await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        email: user.email,
+        password: user.password,
+        targetCalories: user.targetCalories,
+      },
+    });
+    return this.mapToUser(updatedUser);
   }
 
   async updateTargetCalories(
@@ -97,7 +92,14 @@ export class UserRepositoryAdapter implements UserRepositoryPort {
     });
   }
 
-  private mapToUser(userData: any): User {
+  private mapToUser(userData: {
+    id: string;
+    email: string;
+    password: string;
+    targetCalories: number;
+    createdAt: Date;
+    updatedAt: Date;
+  }): User {
     return new User(
       userData.id,
       userData.email,
