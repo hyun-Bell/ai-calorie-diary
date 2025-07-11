@@ -43,7 +43,7 @@ describe('DiaryRepositoryAdapter', () => {
         userId: MOCK_USER_ID,
         totalCalories: 500,
       });
-      
+
       const expectedPrismaReturn = {
         id: MOCK_DIARY_ID,
         content: diaryData.content,
@@ -55,13 +55,13 @@ describe('DiaryRepositoryAdapter', () => {
         updatedAt: new Date(),
         mealTime: 'LUNCH',
       };
-      
+
       // Mock user exists check
       (prismaService.user.findUnique as jest.Mock).mockResolvedValue({
         id: MOCK_USER_ID,
         email: 'test@example.com',
       });
-      
+
       setupCreateDiaryMock(expectedPrismaReturn);
 
       // Act
@@ -88,7 +88,7 @@ describe('DiaryRepositoryAdapter', () => {
         content: 'Diary without image',
         userId: MOCK_USER_ID,
       });
-      
+
       const expectedPrismaReturn = {
         id: MOCK_DIARY_ID,
         content: diaryData.content,
@@ -100,13 +100,13 @@ describe('DiaryRepositoryAdapter', () => {
         updatedAt: new Date(),
         mealTime: 'LUNCH',
       };
-      
+
       // Mock user exists check
       (prismaService.user.findUnique as jest.Mock).mockResolvedValue({
         id: MOCK_USER_ID,
         email: 'test@example.com',
       });
-      
+
       setupCreateDiaryMock(expectedPrismaReturn);
 
       // Act
@@ -129,13 +129,13 @@ describe('DiaryRepositoryAdapter', () => {
       // Arrange
       const diaryData = DomainDiaryFactory.create();
       const dbError = new Error('Database connection error');
-      
+
       // Mock user exists check
       (prismaService.user.findUnique as jest.Mock).mockResolvedValue({
         id: diaryData.userId,
         email: 'test@example.com',
       });
-      
+
       (prismaService.diary.create as jest.Mock).mockRejectedValue(dbError);
 
       // Act & Assert
@@ -145,7 +145,9 @@ describe('DiaryRepositoryAdapter', () => {
 
   describe('findDiaryById', () => {
     const setupFindByIdMock = (returnValue: any) => {
-      (prismaService.diary.findUnique as jest.Mock).mockResolvedValue(returnValue);
+      (prismaService.diary.findUnique as jest.Mock).mockResolvedValue(
+        returnValue,
+      );
     };
 
     it('should find a diary by id', async () => {
@@ -161,7 +163,7 @@ describe('DiaryRepositoryAdapter', () => {
         updatedAt: new Date(),
         mealTime: 'DINNER',
       };
-      
+
       setupFindByIdMock(expectedDiary);
 
       // Act
@@ -189,7 +191,9 @@ describe('DiaryRepositoryAdapter', () => {
 
   describe('findDiariesByUserId', () => {
     const setupFindManyMock = (returnValue: any[]) => {
-      (prismaService.diary.findMany as jest.Mock).mockResolvedValue(returnValue);
+      (prismaService.diary.findMany as jest.Mock).mockResolvedValue(
+        returnValue,
+      );
     };
 
     it('should find all diaries for a user', async () => {
@@ -218,7 +222,7 @@ describe('DiaryRepositoryAdapter', () => {
           mealTime: 'LUNCH',
         },
       ];
-      
+
       setupFindManyMock(expectedDiaries);
 
       // Act
@@ -264,11 +268,17 @@ describe('DiaryRepositoryAdapter', () => {
           mealTime: 'LUNCH',
         },
       ];
-      
-      (prismaService.diary.findMany as jest.Mock).mockResolvedValue(expectedDiaries);
+
+      (prismaService.diary.findMany as jest.Mock).mockResolvedValue(
+        expectedDiaries,
+      );
 
       // Act
-      const result = await adapter.findDiariesByPeriod(MOCK_USER_ID, startDate, endDate);
+      const result = await adapter.findDiariesByPeriod(
+        MOCK_USER_ID,
+        startDate,
+        endDate,
+      );
 
       // Assert
       expect(prismaService.diary.findMany).toHaveBeenCalledWith({
@@ -304,8 +314,10 @@ describe('DiaryRepositoryAdapter', () => {
         updatedAt: new Date(),
         mealTime: 'DINNER',
       };
-      
-      (prismaService.diary.update as jest.Mock).mockResolvedValue(expectedUpdatedDiary);
+
+      (prismaService.diary.update as jest.Mock).mockResolvedValue(
+        expectedUpdatedDiary,
+      );
 
       // Act
       const result = await adapter.updateDiary(MOCK_DIARY_ID, updateData);

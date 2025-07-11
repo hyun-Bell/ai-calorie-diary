@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotFoundException, UnauthorizedException, ForbiddenException } from '@nestjs/common';
+import { NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { DiaryService } from './diary.service';
 import {
   DIARY_REPOSITORY_PORT,
@@ -48,7 +48,9 @@ describe('DiaryService', () => {
   describe('createDiary', () => {
     const mockUserId = 'user-123';
     const mockImageUrl = 'http://test-image.jpg';
-    const mockImageFile = { buffer: Buffer.from('test') } as Express.Multer.File;
+    const mockImageFile = {
+      buffer: Buffer.from('test'),
+    } as Express.Multer.File;
 
     it('should create diary with image and nutrition info', async () => {
       // Arrange
@@ -81,7 +83,7 @@ describe('DiaryService', () => {
 
     it('should create diary without image', async () => {
       // Arrange
-      const mockDiary = DomainDiaryFactory.createWithoutImage({ 
+      const mockDiary = DomainDiaryFactory.createWithoutImage({
         userId: mockUserId,
       });
       diaryRepository.createDiary.mockResolvedValue(mockDiary);
@@ -183,7 +185,11 @@ describe('DiaryService', () => {
       diaryRepository.findDiariesByPeriod.mockResolvedValue(mockDiaries);
 
       // Act
-      const result = await service.getDiariesByPeriod(userId, startDate, endDate);
+      const result = await service.getDiariesByPeriod(
+        userId,
+        startDate,
+        endDate,
+      );
 
       // Assert
       expect(diaryRepository.findDiariesByPeriod).toHaveBeenCalledWith(
@@ -199,7 +205,11 @@ describe('DiaryService', () => {
       diaryRepository.findDiariesByPeriod.mockResolvedValue([]);
 
       // Act
-      const result = await service.getDiariesByPeriod(userId, startDate, endDate);
+      const result = await service.getDiariesByPeriod(
+        userId,
+        startDate,
+        endDate,
+      );
 
       // Assert
       expect(result).toEqual([]);
@@ -215,7 +225,7 @@ describe('DiaryService', () => {
 
     it('should update diary with new image', async () => {
       // Arrange
-      const existingDiary = DomainDiaryFactory.create({ 
+      const existingDiary = DomainDiaryFactory.create({
         id: diaryId,
         userId,
         imageUrl: 'http://old-image.jpg',
@@ -230,7 +240,7 @@ describe('DiaryService', () => {
         existingDiary.totalCalories,
         existingDiary.calorieBreakdown,
       );
-      
+
       diaryRepository.findDiaryById.mockResolvedValue(existingDiary);
       fileStorageService.uploadFile.mockResolvedValue(newImageUrl);
       diaryRepository.updateDiary.mockResolvedValue(updatedDiary);
@@ -270,7 +280,7 @@ describe('DiaryService', () => {
         existingDiary.totalCalories,
         existingDiary.calorieBreakdown,
       );
-      
+
       diaryRepository.findDiaryById.mockResolvedValue(existingDiary);
       diaryRepository.updateDiary.mockResolvedValue(updatedDiary);
 
@@ -289,7 +299,7 @@ describe('DiaryService', () => {
 
     it('should throw UnauthorizedException when user does not own diary', async () => {
       // Arrange
-      const existingDiary = DomainDiaryFactory.create({ 
+      const existingDiary = DomainDiaryFactory.create({
         id: diaryId,
         userId: 'other-user',
       });
@@ -308,7 +318,7 @@ describe('DiaryService', () => {
 
     it('should delete diary with image', async () => {
       // Arrange
-      const mockDiary = DomainDiaryFactory.create({ 
+      const mockDiary = DomainDiaryFactory.create({
         id: diaryId,
         userId,
         imageUrl: 'http://image-to-delete.jpg',
@@ -327,7 +337,7 @@ describe('DiaryService', () => {
 
     it('should delete diary without image', async () => {
       // Arrange
-      const mockDiary = DomainDiaryFactory.createWithoutImage({ 
+      const mockDiary = DomainDiaryFactory.createWithoutImage({
         id: diaryId,
         userId,
       });
@@ -343,7 +353,7 @@ describe('DiaryService', () => {
 
     it('should throw UnauthorizedException when user does not own diary', async () => {
       // Arrange
-      const mockDiary = DomainDiaryFactory.create({ 
+      const mockDiary = DomainDiaryFactory.create({
         id: diaryId,
         userId: 'other-user',
       });

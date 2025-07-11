@@ -49,7 +49,10 @@ describe('AuthService', () => {
   });
 
   describe('register', () => {
-    const createRegisterCommand = (email = TEST_USER_EMAIL, password = TEST_USER_PASSWORD) => ({
+    const createRegisterCommand = (
+      email = TEST_USER_EMAIL,
+      password = TEST_USER_PASSWORD,
+    ) => ({
       email,
       password,
     });
@@ -64,7 +67,7 @@ describe('AuthService', () => {
         new Date(),
         new Date(),
       );
-      
+
       userUseCaseMock.findByEmail.mockResolvedValue(null);
       userUseCaseMock.create.mockResolvedValue(savedUser);
       jwtServiceMock.sign
@@ -91,7 +94,7 @@ describe('AuthService', () => {
         accessToken: ACCESS_TOKEN,
         refreshToken: REFRESH_TOKEN,
       });
-      
+
       expect(userUseCaseMock.findByEmail).toHaveBeenCalledWith(TEST_USER_EMAIL);
       expect(userUseCaseMock.create).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -124,7 +127,10 @@ describe('AuthService', () => {
   });
 
   describe('login', () => {
-    const createLoginCommand = (email = TEST_USER_EMAIL, password = TEST_USER_PASSWORD) => ({
+    const createLoginCommand = (
+      email = TEST_USER_EMAIL,
+      password = TEST_USER_PASSWORD,
+    ) => ({
       email,
       password,
     });
@@ -241,7 +247,9 @@ describe('AuthService', () => {
 
     it('should throw UnauthorizedException for invalid refresh token', async () => {
       // Arrange
-      const refreshTokenCommand = createRefreshTokenCommand('invalidRefreshToken');
+      const refreshTokenCommand = createRefreshTokenCommand(
+        'invalidRefreshToken',
+      );
       jwtServiceMock.verify.mockImplementation(() => {
         throw new Error('Invalid token');
       });

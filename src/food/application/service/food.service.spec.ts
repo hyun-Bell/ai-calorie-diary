@@ -9,7 +9,6 @@ import {
   FileStorageService,
   FILE_STORAGE_SERVICE_TOKEN,
 } from '@common/storage/file-storage.interface';
-import { FoodAnalysis } from '@food/domain/food-analysis';
 import { FoodAnalyzedEvent } from '@food/domain/events/food-analyzed.event';
 import { MockServices } from '../../../../test/utils/mocks/service.mock';
 import { FoodFactory } from '../../../../test/utils/factories/food.factory';
@@ -37,7 +36,8 @@ describe('FoodService', () => {
   beforeEach(async () => {
     // Create mocks using test utilities
     openAIApiPort = MockServices.openAiApi() as jest.Mocked<OpenAIApiPort>;
-    fileStorageService = MockServices.fileStorage() as jest.Mocked<FileStorageService>;
+    fileStorageService =
+      MockServices.fileStorage() as jest.Mocked<FileStorageService>;
     eventEmitter = { emit: jest.fn() } as unknown as jest.Mocked<EventEmitter2>;
 
     const module: TestingModule = await Test.createTestingModule({
@@ -58,13 +58,14 @@ describe('FoodService', () => {
   });
 
   describe('analyzeFoodImage', () => {
-    const createMockFile = (buffer = 'test image'): Express.Multer.File => ({
-      buffer: Buffer.from(buffer),
-      originalname: 'test.jpg',
-      mimetype: 'image/jpeg',
-      size: 1024,
-      fieldname: 'image',
-    } as Express.Multer.File);
+    const createMockFile = (buffer = 'test image'): Express.Multer.File =>
+      ({
+        buffer: Buffer.from(buffer),
+        originalname: 'test.jpg',
+        mimetype: 'image/jpeg',
+        size: 1024,
+        fieldname: 'image',
+      }) as Express.Multer.File;
 
     const setupSuccessfulAnalysis = () => {
       const mockFoodAnalysis = FoodFactory.createHealthyMealAnalysis();
@@ -115,7 +116,8 @@ describe('FoodService', () => {
       await service.analyzeFoodImage(mockFile, MOCK_DESCRIPTION, MOCK_USER_ID);
 
       // Assert
-      const emittedEvent = eventEmitter.emit.mock.calls[0][1] as FoodAnalyzedEvent;
+      const emittedEvent = eventEmitter.emit.mock
+        .calls[0][1] as FoodAnalyzedEvent;
       expect(emittedEvent).toBeInstanceOf(FoodAnalyzedEvent);
       expect(emittedEvent.payload).toMatchObject({
         userId: MOCK_USER_ID,
@@ -141,7 +143,7 @@ describe('FoodService', () => {
       await expect(
         service.analyzeFoodImage(mockFile, MOCK_DESCRIPTION, MOCK_USER_ID),
       ).rejects.toThrow(COMPRESSION_ERROR_MESSAGE);
-      
+
       expect(fileStorageService.uploadFile).not.toHaveBeenCalled();
       expect(openAIApiPort.analyzeFood).not.toHaveBeenCalled();
       expect(eventEmitter.emit).not.toHaveBeenCalled();
@@ -158,7 +160,7 @@ describe('FoodService', () => {
       await expect(
         service.analyzeFoodImage(mockFile, MOCK_DESCRIPTION, MOCK_USER_ID),
       ).rejects.toThrow(apiError);
-      
+
       expect(eventEmitter.emit).not.toHaveBeenCalled();
     });
 
@@ -172,7 +174,7 @@ describe('FoodService', () => {
       await expect(
         service.analyzeFoodImage(mockFile, MOCK_DESCRIPTION, MOCK_USER_ID),
       ).rejects.toThrow(storageError);
-      
+
       expect(openAIApiPort.analyzeFood).not.toHaveBeenCalled();
       expect(eventEmitter.emit).not.toHaveBeenCalled();
     });
