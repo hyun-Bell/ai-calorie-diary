@@ -12,6 +12,7 @@ import { MetricsModule } from '@common/metrics/metrics.module';
 import { MetricsMiddleware } from '@common/metrics/metrics.middleware';
 import { AppConfigModule } from './config/config.module';
 import { ConfigService } from '@nestjs/config';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { ConfigService } from '@nestjs/config';
     FoodModule,
     MetricsModule,
   ],
+  controllers: [AppController],
   providers: [
     {
       provide: EventPublisherSymbol,
