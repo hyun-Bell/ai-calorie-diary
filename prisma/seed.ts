@@ -3,22 +3,25 @@ import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
+// 개발 모드인지 확인
+const isDevelopmentMode = process.env.NODE_ENV === 'development' || process.env.DEV_MODE === 'true';
+
 // 목업 사용자 데이터
 const mockUsers = [
   {
-    email: 'demo@example.com',
-    password: 'demo123456',
-    targetCalories: 2000,
+    email: isDevelopmentMode && process.env.DEV_USER_EMAIL ? process.env.DEV_USER_EMAIL : 'demo@example.com',
+    password: isDevelopmentMode && process.env.DEV_USER_PASSWORD ? process.env.DEV_USER_PASSWORD : 'demo123456',
+    targetCalories: isDevelopmentMode && process.env.DEV_USER_TARGET_CALORIES ? parseInt(process.env.DEV_USER_TARGET_CALORIES) : 2000,
   },
   {
-    email: 'test@example.com',
-    password: 'test123456',
-    targetCalories: 1800,
+    email: isDevelopmentMode && process.env.DEV_ADMIN_EMAIL ? process.env.DEV_ADMIN_EMAIL : 'test@example.com',
+    password: isDevelopmentMode && process.env.DEV_ADMIN_PASSWORD ? process.env.DEV_ADMIN_PASSWORD : 'test123456',
+    targetCalories: isDevelopmentMode && process.env.DEV_ADMIN_TARGET_CALORIES ? parseInt(process.env.DEV_ADMIN_TARGET_CALORIES) : 1800,
   },
   {
-    email: 'user@example.com',
-    password: 'user123456',
-    targetCalories: 2200,
+    email: isDevelopmentMode && process.env.DEV_USER2_EMAIL ? process.env.DEV_USER2_EMAIL : 'user@example.com',
+    password: isDevelopmentMode && process.env.DEV_USER2_PASSWORD ? process.env.DEV_USER2_PASSWORD : 'user123456',
+    targetCalories: isDevelopmentMode && process.env.DEV_USER2_TARGET_CALORIES ? parseInt(process.env.DEV_USER2_TARGET_CALORIES) : 2200,
   },
 ];
 
@@ -219,6 +222,11 @@ function getDateDaysAgo(daysAgo: number): Date {
 
 async function main() {
   console.log('🌱 데이터베이스 시딩 시작...');
+  console.log('📋 환경 설정:', {
+    NODE_ENV: process.env.NODE_ENV,
+    DEV_MODE: process.env.DEV_MODE,
+    isDevelopmentMode: isDevelopmentMode,
+  });
 
   // 기존 데이터 정리
   console.log('🧹 기존 데이터 정리 중...');
@@ -227,6 +235,12 @@ async function main() {
   await prisma.user.deleteMany();
 
   console.log('👥 사용자 생성 중...');
+  
+  // 생성될 계정 정보 미리 출력
+  console.log('📝 생성될 계정:');
+  mockUsers.forEach(user => {
+    console.log(`  - ${user.email} / ${user.password}`);
+  });
 
   for (let i = 0; i < mockUsers.length; i++) {
     const userData = mockUsers[i];
@@ -368,9 +382,21 @@ async function main() {
   console.log(`📖 총 일기: ${totalDiaries}개`);
 
   console.log('\n🔑 테스트 계정 정보:');
-  console.log('  📧 demo@example.com | 🔐 demo123456 | 🎯 2000kcal');
-  console.log('  📧 test@example.com | 🔐 test123456 | 🎯 1800kcal');
-  console.log('  📧 user@example.com | 🔐 user123456 | 🎯 2200kcal');
+  
+  // 실제 생성된 계정 정보 표시
+  const allUsers = await prisma.user.findMany({
+    select: { email: true, targetCalories: true },
+    orderBy: { createdAt: 'asc' }
+  });
+  
+  allUsers.forEach((user, index) => {
+    const originalData = index < mockUsers.length ? mockUsers[index] : null;
+    if (originalData) {
+      console.log(`  📧 ${user.email} | 🔐 ${originalData.password} | 🎯 ${user.targetCalories || 0}kcal`);
+    }
+  });
+  
+  // 파워유저 추가
   console.log('  📧 poweruser@example.com | 🔐 power123456 | 🎯 2500kcal');
 }
 
