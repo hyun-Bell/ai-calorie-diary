@@ -20,17 +20,17 @@ export class FoodFactory {
       ingredients: ['닭가슴살', '브로콜리', '현미밥'],
       totalCalories: 448,
       breakdown: {
-        '닭가슴살': {
+        닭가슴살: {
           protein: { amount: 30, unit: 'g', calories: 120 },
           fat: { amount: 5, unit: 'g', calories: 45 },
           carbohydrate: { amount: 0, unit: 'g', calories: 0 },
         },
-        '브로콜리': {
+        브로콜리: {
           protein: { amount: 3, unit: 'g', calories: 12 },
           fat: { amount: 0.5, unit: 'g', calories: 4.5 },
           carbohydrate: { amount: 7, unit: 'g', calories: 28 },
         },
-        '현미밥': {
+        현미밥: {
           protein: { amount: 6, unit: 'g', calories: 24 },
           fat: { amount: 2, unit: 'g', calories: 18 },
           carbohydrate: { amount: 55, unit: 'g', calories: 220 },
@@ -62,7 +62,7 @@ export class FoodFactory {
           fat: { amount: 18, unit: 'g', calories: 162 },
           carbohydrate: { amount: 3, unit: 'g', calories: 12 },
         },
-        '페퍼로니': {
+        페퍼로니: {
           protein: { amount: 20, unit: 'g', calories: 80 },
           fat: { amount: 35, unit: 'g', calories: 315 },
           carbohydrate: { amount: 2, unit: 'g', calories: 8 },
@@ -79,12 +79,12 @@ export class FoodFactory {
       ingredients: ['사과', '땅콩버터'],
       totalCalories: 267,
       breakdown: {
-        '사과': {
+        사과: {
           protein: { amount: 0.5, unit: 'g', calories: 2 },
           fat: { amount: 0.3, unit: 'g', calories: 2.7 },
           carbohydrate: { amount: 25, unit: 'g', calories: 100 },
         },
-        '땅콩버터': {
+        땅콩버터: {
           protein: { amount: 8, unit: 'g', calories: 32 },
           fat: { amount: 16, unit: 'g', calories: 144 },
           carbohydrate: { amount: 8, unit: 'g', calories: 32 },

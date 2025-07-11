@@ -22,7 +22,5 @@ export function createMockAuthGuard(getUserId: () => string) {
  * Override configuration for JWT Auth Guard in tests
  */
 export function overrideAuthGuard(testingModule: any, mockGuard: any) {
-  return testingModule
-    .overrideGuard(JwtAuthGuard)
-    .useValue(mockGuard);
+  return testingModule.overrideGuard(JwtAuthGuard).useValue(mockGuard);
 }

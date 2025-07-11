@@ -21,10 +21,10 @@ export async function createE2ETestApp(): Promise<E2ETestContext> {
   }).compile();
 
   const app = moduleFixture.createNestApplication();
-  
+
   configureGlobalPipesAndFilters(app);
   configureGlobalPrefix(app);
-  
+
   await app.init();
 
   return { app, moduleFixture };

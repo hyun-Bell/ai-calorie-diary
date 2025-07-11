@@ -4,11 +4,11 @@
  */
 export function createMockService<T>(methods: string[]): jest.Mocked<T> {
   const mock: any = {};
-  
+
   methods.forEach((method) => {
     mock[method] = jest.fn();
   });
-  
+
   return mock as jest.Mocked<T>;
 }
 
@@ -37,8 +37,7 @@ export const MockServices = {
   fileStorage: () =>
     createMockService<any>(['uploadFile', 'deleteFile', 'getFileUrl']),
 
-  openAiApi: () =>
-    createMockService<any>(['analyzeFood', 'analyzeFoodImage']),
+  openAiApi: () => createMockService<any>(['analyzeFood', 'analyzeFoodImage']),
 
   jwtService: () =>
     createMockService(['sign', 'verify', 'signAsync', 'verifyAsync']),
@@ -48,36 +47,36 @@ export const MockServices = {
       $transaction: jest.fn(),
       $disconnect: jest.fn(),
       $connect: jest.fn(),
-    user: {
-      create: jest.fn(),
-      findUnique: jest.fn(),
-      findMany: jest.fn(),
-      update: jest.fn(),
-      delete: jest.fn(),
-    },
-    diary: {
-      create: jest.fn(),
-      findUnique: jest.fn(),
-      findFirst: jest.fn(),
-      findMany: jest.fn(),
-      update: jest.fn(),
-      updateMany: jest.fn(),
-      delete: jest.fn(),
-      deleteMany: jest.fn(),
-      count: jest.fn(),
-    },
-    refreshToken: {
-      create: jest.fn(),
-      findUnique: jest.fn(),
-      findMany: jest.fn(),
-      delete: jest.fn(),
-      deleteMany: jest.fn(),
-    },
+      user: {
+        create: jest.fn(),
+        findUnique: jest.fn(),
+        findMany: jest.fn(),
+        update: jest.fn(),
+        delete: jest.fn(),
+      },
+      diary: {
+        create: jest.fn(),
+        findUnique: jest.fn(),
+        findFirst: jest.fn(),
+        findMany: jest.fn(),
+        update: jest.fn(),
+        updateMany: jest.fn(),
+        delete: jest.fn(),
+        deleteMany: jest.fn(),
+        count: jest.fn(),
+      },
+      refreshToken: {
+        create: jest.fn(),
+        findUnique: jest.fn(),
+        findMany: jest.fn(),
+        delete: jest.fn(),
+        deleteMany: jest.fn(),
+      },
     };
-    
+
     // Setup $transaction to pass the mock itself to the callback
     mock.$transaction.mockImplementation(async (cb) => cb(mock));
-    
+
     return mock;
   },
 };

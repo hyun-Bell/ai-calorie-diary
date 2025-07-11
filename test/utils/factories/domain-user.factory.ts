@@ -36,7 +36,10 @@ export class DomainUserFactory {
   /**
    * Creates multiple user entities
    */
-  static createMany(count: number, params: CreateDomainUserParams = {}): User[] {
+  static createMany(
+    count: number,
+    params: CreateDomainUserParams = {},
+  ): User[] {
     return Array.from({ length: count }, () => this.create(params));
   }
 

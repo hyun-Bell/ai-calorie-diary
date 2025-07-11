@@ -22,15 +22,21 @@ export class DiaryFactory {
   /**
    * Creates a diary entry with default or custom values
    */
-  static create(params: CreateDiaryParams = {}): Omit<Diary, 'id' | 'createdAt' | 'updatedAt'> {
+  static create(
+    params: CreateDiaryParams = {},
+  ): Omit<Diary, 'id' | 'createdAt' | 'updatedAt'> {
     this.diaryCounter++;
 
     return {
       content: params.content ?? `Test diary entry ${this.diaryCounter}`,
-      imageUrl: params.imageUrl !== undefined ? params.imageUrl : `http://test-image-${this.diaryCounter}.jpg`,
+      imageUrl:
+        params.imageUrl !== undefined
+          ? params.imageUrl
+          : `http://test-image-${this.diaryCounter}.jpg`,
       userId: params.userId ?? uuidv4(),
       totalCalories: params.totalCalories ?? 500,
-      calorieBreakdown: params.calorieBreakdown ?? this.createDefaultBreakdown(),
+      calorieBreakdown:
+        params.calorieBreakdown ?? this.createDefaultBreakdown(),
       mealTime: params.mealTime ?? 'LUNCH',
     };
   }
@@ -50,9 +56,13 @@ export class DiaryFactory {
   /**
    * Creates multiple diary entries
    */
-  static createMany(count: number, userId: string, params: CreateDiaryParams = {}): Diary[] {
-    return Array.from({ length: count }, () => 
-      this.createComplete({ ...params, userId })
+  static createMany(
+    count: number,
+    userId: string,
+    params: CreateDiaryParams = {},
+  ): Diary[] {
+    return Array.from({ length: count }, () =>
+      this.createComplete({ ...params, userId }),
     );
   }
 
@@ -84,17 +94,17 @@ export class DiaryFactory {
    */
   static createHealthyMealBreakdown(): FoodBreakdown {
     return {
-      '닭가슴살': {
+      닭가슴살: {
         protein: { amount: 30, unit: 'g', calories: 120 },
         fat: { amount: 5, unit: 'g', calories: 45 },
         carbohydrate: { amount: 0, unit: 'g', calories: 0 },
       },
-      '브로콜리': {
+      브로콜리: {
         protein: { amount: 3, unit: 'g', calories: 12 },
         fat: { amount: 0.5, unit: 'g', calories: 4.5 },
         carbohydrate: { amount: 7, unit: 'g', calories: 28 },
       },
-      '현미밥': {
+      현미밥: {
         protein: { amount: 6, unit: 'g', calories: 24 },
         fat: { amount: 2, unit: 'g', calories: 18 },
         carbohydrate: { amount: 55, unit: 'g', calories: 220 },

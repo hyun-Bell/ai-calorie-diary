@@ -17,9 +17,11 @@ export class UserFactory {
   /**
    * Creates a user with default or custom values
    */
-  static create(params: CreateUserParams = {}): Omit<User, 'id' | 'createdAt' | 'updatedAt'> {
+  static create(
+    params: CreateUserParams = {},
+  ): Omit<User, 'id' | 'createdAt' | 'updatedAt'> {
     this.userCounter++;
-    
+
     return {
       email: params.email ?? `test${this.userCounter}@example.com`,
       password: params.password ?? 'hashedPassword123',

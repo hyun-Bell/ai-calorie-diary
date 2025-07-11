@@ -64,10 +64,7 @@ export class AuthHelper {
   /**
    * Logs in a user via API
    */
-  async loginUser(
-    email: string,
-    password: string,
-  ): Promise<AuthenticatedUser> {
+  async loginUser(email: string, password: string): Promise<AuthenticatedUser> {
     const response = await request(this.app.getHttpServer())
       .post(API_ENDPOINTS.AUTH.LOGIN)
       .send({ email, password })

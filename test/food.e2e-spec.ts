@@ -85,11 +85,17 @@ describe('FoodController (e2e)', () => {
         expect(response.status).toBe(HTTP_STATUS.CREATED);
         AssertionHelper.assertSuccessResponse(response, HTTP_STATUS.CREATED);
         AssertionHelper.assertFoodAnalysisStructure(response.body.data);
-        
+
         const { data } = response.body;
-        expect(data.ingredients).toEqual(MOCK_NUTRITION.HEALTHY_MEAL.ingredients);
-        expect(data.totalCalories).toBe(MOCK_NUTRITION.HEALTHY_MEAL.totalCalories);
-        expect(data.breakdown).toHaveProperty(MOCK_NUTRITION.HEALTHY_MEAL.ingredients[0]);
+        expect(data.ingredients).toEqual(
+          MOCK_NUTRITION.HEALTHY_MEAL.ingredients,
+        );
+        expect(data.totalCalories).toBe(
+          MOCK_NUTRITION.HEALTHY_MEAL.totalCalories,
+        );
+        expect(data.breakdown).toHaveProperty(
+          MOCK_NUTRITION.HEALTHY_MEAL.ingredients[0],
+        );
       });
 
       it('should analyze pizza meal', async () => {
@@ -99,10 +105,12 @@ describe('FoodController (e2e)', () => {
 
         expect(response.status).toBe(HTTP_STATUS.CREATED);
         AssertionHelper.assertSuccessResponse(response, HTTP_STATUS.CREATED);
-        
+
         const { data } = response.body;
         expect(data.ingredients).toEqual(MOCK_NUTRITION.PIZZA_MEAL.ingredients);
-        expect(data.totalCalories).toBe(MOCK_NUTRITION.PIZZA_MEAL.totalCalories);
+        expect(data.totalCalories).toBe(
+          MOCK_NUTRITION.PIZZA_MEAL.totalCalories,
+        );
       });
 
       it('should handle analysis errors', async () => {
@@ -125,13 +133,17 @@ describe('FoodController (e2e)', () => {
         return;
       }
 
-      it('should analyze food image', async () => {
-        const response = await uploadFoodImage('음식 사진 분석');
+      it(
+        'should analyze food image',
+        async () => {
+          const response = await uploadFoodImage('음식 사진 분석');
 
-        expect(response.status).toBe(HTTP_STATUS.CREATED);
-        AssertionHelper.assertSuccessResponse(response, HTTP_STATUS.CREATED);
-        AssertionHelper.assertFoodAnalysisStructure(response.body.data);
-      }, TIMEOUTS.LONG_RUNNING);
+          expect(response.status).toBe(HTTP_STATUS.CREATED);
+          AssertionHelper.assertSuccessResponse(response, HTTP_STATUS.CREATED);
+          AssertionHelper.assertFoodAnalysisStructure(response.body.data);
+        },
+        TIMEOUTS.LONG_RUNNING,
+      );
     });
 
     describe('file validation', () => {
@@ -146,8 +158,13 @@ describe('FoodController (e2e)', () => {
             .field('description', 'Large file test')
             .expect(HTTP_STATUS.BAD_REQUEST);
 
-          AssertionHelper.assertErrorResponse(response, HTTP_STATUS.BAD_REQUEST);
-          expect(response.body.error.message).toContain(ERROR_MESSAGES.FILE_TOO_LARGE);
+          AssertionHelper.assertErrorResponse(
+            response,
+            HTTP_STATUS.BAD_REQUEST,
+          );
+          expect(response.body.error.message).toContain(
+            ERROR_MESSAGES.FILE_TOO_LARGE,
+          );
         } catch (error: any) {
           // ECONNRESET is expected for large files
           if (error.code !== 'ECONNRESET') {
@@ -158,7 +175,7 @@ describe('FoodController (e2e)', () => {
 
       it.skip('should reject invalid file types', async () => {
         const testFilePath = path.join(__dirname, TEST_FILES.INVALID_FILE);
-        
+
         if (!fs.existsSync(testFilePath)) {
           console.warn(`Test file not found: ${testFilePath}`);
           return;
@@ -172,7 +189,9 @@ describe('FoodController (e2e)', () => {
           .expect(HTTP_STATUS.BAD_REQUEST);
 
         AssertionHelper.assertErrorResponse(response, HTTP_STATUS.BAD_REQUEST);
-        expect(response.body.error.message).toContain(ERROR_MESSAGES.INVALID_FILE_TYPE);
+        expect(response.body.error.message).toContain(
+          ERROR_MESSAGES.INVALID_FILE_TYPE,
+        );
       });
     });
   });
@@ -180,7 +199,7 @@ describe('FoodController (e2e)', () => {
   // Helper function to upload food image
   async function uploadFoodImage(description: string) {
     const imagePath = path.join(__dirname, TEST_FILES.VALID_IMAGE);
-    
+
     return request(app.getHttpServer())
       .post(API_ENDPOINTS.FOOD.ANALYZE)
       .set('Authorization', `Bearer ${authToken}`)

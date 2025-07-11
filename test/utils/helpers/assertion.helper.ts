@@ -28,7 +28,7 @@ export class AssertionHelper {
     expect(response.body).toHaveProperty('success', false);
     expect(response.body).toHaveProperty('error');
     expect(response.body.error).toHaveProperty('statusCode', expectedStatus);
-    
+
     if (expectedErrorCode) {
       expect(response.body.error).toHaveProperty('code', expectedErrorCode);
     }
@@ -44,7 +44,7 @@ export class AssertionHelper {
     expect(response.body.meta).toHaveProperty('total');
     expect(response.body.meta).toHaveProperty('page');
     expect(response.body.meta).toHaveProperty('limit');
-    
+
     if (expectedTotal !== undefined) {
       expect(response.body.meta.total).toBe(expectedTotal);
     }
