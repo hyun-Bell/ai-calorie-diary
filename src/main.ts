@@ -1,11 +1,12 @@
-import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
-import { AppModule } from './app.module';
-import * as cookieParser from 'cookie-parser';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AllExceptionsFilter } from '@common/filters/all-exceptions.filter';
+import { ResponseInterceptor } from '@common/interceptors/response.interceptor';
 import { CustomLoggerService } from '@common/logger/custom-logger.service';
+import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { NestFactory, Reflector } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as cookieParser from 'cookie-parser';
+import { AppModule } from './app.module';
 
 async function bootstrap() {
   const logger = new CustomLoggerService();
@@ -13,6 +14,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger,
   });
+
+  const reflector = app.get(Reflector);
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
@@ -20,15 +23,22 @@ async function bootstrap() {
     }),
   );
   app.useGlobalFilters(new AllExceptionsFilter(logger));
+  app.useGlobalInterceptors(new ResponseInterceptor(reflector));
   app.setGlobalPrefix('api');
   app.use(cookieParser());
 
   const config = new DocumentBuilder()
-    .setTitle('음식 칼로리 계산 API')
-    .setDescription('음식 사진을 분석하여 칼로리를 계산하는 API')
+    .setTitle('AI 칼로리 다이어리 API')
+    .setDescription(
+      '음식 사진을 분석하여 칼로리를 계산하고 일기를 작성하는 API',
+    )
     .setVersion('1.0')
-    .addTag('food')
+    .addTag('auth', '인증 관련 API')
+    .addTag('diary', '일기 관련 API')
+    .addTag('food', '음식 분석 관련 API')
+    .addTag('user', '사용자 관련 API')
     .addBearerAuth()
+    .addServer('http://localhost:3000', '개발 서버')
     .build();
 
   const configService = app.get(ConfigService);

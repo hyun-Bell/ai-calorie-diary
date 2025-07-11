@@ -11,11 +11,11 @@ model User {
   id             String        @id @default(uuid())
   email          String        @unique
   password       String
-  targetCalories Int?
-  refreshToken   RefreshToken?
-  diaries        Diary[]
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
+  targetCalories Int?
+  diaries        Diary[]
+  refreshToken   RefreshToken?
 }
 
 model Diary {
@@ -23,18 +23,20 @@ model Diary {
   content          String
   imageUrl         String?
   userId           String
-  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
-  totalCalories    Float?
   calorieBreakdown Json?
+  totalCalories    Float?
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model RefreshToken {
   id        String   @id @default(uuid())
   token     String   @unique
   userId    String   @unique
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   expiresAt DateTime
   createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
+

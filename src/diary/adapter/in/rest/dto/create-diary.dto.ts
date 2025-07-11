@@ -25,7 +25,6 @@ export class CreateDiaryDto {
       try {
         return JSON.parse(value);
       } catch (e) {
-        console.log(e, 'value: ', value);
         return value;
       }
     }
@@ -44,7 +43,6 @@ export class CreateDiaryDto {
       try {
         return JSON.parse(value);
       } catch (e) {
-        console.log(e, 'value: ', value);
         return value;
       }
     }

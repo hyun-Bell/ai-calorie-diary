@@ -24,7 +24,7 @@ export class DiaryRepositoryAdapter implements DiaryRepositoryPort {
           userId: diary.userId,
           totalCalories: diary.totalCalories,
           calorieBreakdown: diary.calorieBreakdown,
-        },
+        } as any,
       });
 
       return this.mapToDomain(createdDiary);

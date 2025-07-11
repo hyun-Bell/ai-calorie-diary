@@ -1,4 +1,14 @@
 import {
+  AUTH_USE_CASE,
+  AuthUseCase,
+} from '@auth/application/port/in/auth.use-case';
+import { LoginCommand } from '@auth/application/port/in/dto/login.command';
+import { RefreshTokenCommand } from '@auth/application/port/in/dto/refresh-token.command';
+import { RegisterCommand } from '@auth/application/port/in/dto/register.command';
+import { ErrorResponseDto } from '@common/dto/error-response.dto';
+import { JwtAuthGuard } from '@common/guards/jwt-auth.guard';
+import { SkipResponseWrapper } from '@common/interceptors/response.interceptor';
+import {
   BadRequestException,
   Body,
   ConflictException,
@@ -11,17 +21,6 @@ import {
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
-import { Request } from 'express';
-import {
-  AUTH_USE_CASE,
-  AuthUseCase,
-} from '@auth/application/port/in/auth.use-case';
-import { LoginDto } from './dto/login.dto';
-import { RefreshTokenDto } from './dto/refresh-token.dto';
-import { LoginCommand } from '@auth/application/port/in/dto/login.command';
-import { RefreshTokenCommand } from '@auth/application/port/in/dto/refresh-token.command';
-import { RegisterCommand } from '@auth/application/port/in/dto/register.command';
-import { RegisterDto } from './dto/register.dto';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -29,8 +28,16 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { JwtAuthGuard } from '@common/guards/jwt-auth.guard';
-import { ErrorResponseDto } from '@common/dto/error-response.dto';
+import { Request } from 'express';
+import {
+  LoginResponseDto,
+  LogoutResponseDto,
+  RefreshTokenResponseDto,
+  RegisterResponseDto,
+} from './dto/auth-response.dto';
+import { LoginDto } from './dto/login.dto';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { RegisterDto } from './dto/register.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -66,12 +73,12 @@ export class AuthController {
   @ApiBody({ type: LoginDto })
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  async login(@Body() loginDto: LoginDto) {
+  @SkipResponseWrapper()
+  async login(@Body() loginDto: LoginDto): Promise<LoginResponseDto> {
     try {
       const command = new LoginCommand(loginDto.email, loginDto.password);
-      const { accessToken, refreshToken, user } = await this.authUseCase.login(
-        command,
-      );
+      const { accessToken, refreshToken, user } =
+        await this.authUseCase.login(command);
       return {
         accessToken,
         refreshToken,
@@ -97,12 +104,14 @@ export class AuthController {
   @ApiBody({ type: RefreshTokenDto })
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
-  async refreshToken(@Body() refreshTokenDto: RefreshTokenDto) {
+  @SkipResponseWrapper()
+  async refreshToken(
+    @Body() refreshTokenDto: RefreshTokenDto,
+  ): Promise<RefreshTokenResponseDto> {
     try {
       const command = new RefreshTokenCommand(refreshTokenDto.refreshToken);
-      const { accessToken, refreshToken } = await this.authUseCase.refreshToken(
-        command,
-      );
+      const { accessToken, refreshToken } =
+        await this.authUseCase.refreshToken(command);
       return { accessToken, refreshToken };
     } catch (error) {
       throw new UnauthorizedException('Invalid refresh token');
@@ -135,7 +144,10 @@ export class AuthController {
   @ApiBody({ type: RegisterDto })
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
-  async register(@Body() registerDto: RegisterDto) {
+  @SkipResponseWrapper()
+  async register(
+    @Body() registerDto: RegisterDto,
+  ): Promise<RegisterResponseDto> {
     try {
       const command = new RegisterCommand(
         registerDto.email,
@@ -163,7 +175,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Post('logout')
   @HttpCode(HttpStatus.OK)
-  async logout(@Req() req: Request) {
+  async logout(@Req() req: Request): Promise<LogoutResponseDto> {
     const userId = req.user['id'];
     await this.authUseCase.logout(userId);
     return { message: 'Logout successful' };

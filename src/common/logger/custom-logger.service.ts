@@ -1,8 +1,8 @@
 // src/common/logger/custom-logger.service.ts
 
 import { Injectable, LoggerService } from '@nestjs/common';
-import * as winston from 'winston';
 import * as path from 'path';
+import * as winston from 'winston';
 
 @Injectable()
 export class CustomLoggerService implements LoggerService {
@@ -13,7 +13,7 @@ export class CustomLoggerService implements LoggerService {
     const filename = path.join(logDir, 'app.log');
 
     this.logger = winston.createLogger({
-      level: 'info',
+      level: process.env.LOG_LEVEL || 'info',
       format: winston.format.combine(
         winston.format.timestamp({
           format: 'YYYY-MM-DD HH:mm:ss',

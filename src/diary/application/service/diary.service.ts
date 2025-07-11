@@ -65,9 +65,8 @@ export class DiaryService implements DiaryUseCase {
   }
 
   async getDiariesByUserId(userId: string): Promise<Diary[]> {
-    const existingDiary = await this.diaryRepository.findDiariesByUserId(
-      userId,
-    );
+    const existingDiary =
+      await this.diaryRepository.findDiariesByUserId(userId);
     if (!existingDiary) {
       throw new NotFoundException('Diary not found');
     }

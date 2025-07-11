@@ -1,12 +1,12 @@
+import { CustomLoggerService } from '@common/logger/custom-logger.service';
 import {
-  ExceptionFilter,
-  Catch,
   ArgumentsHost,
+  Catch,
+  ExceptionFilter,
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { CustomLoggerService } from '@common/logger/custom-logger.service';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -40,10 +40,13 @@ export class AllExceptionsFilter implements ExceptionFilter {
     );
 
     response.status(status).json({
-      statusCode: status,
-      message,
-      error,
-      errorCode,
+      success: false,
+      error: {
+        code: errorCode,
+        message: message,
+        statusCode: status,
+        details: error,
+      },
       timestamp: new Date().toISOString(),
       path: request.url,
     });

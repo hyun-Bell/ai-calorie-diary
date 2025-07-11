@@ -25,7 +25,11 @@
     "test:food": "jest --verbose --testPathPattern=food",
     "test:food:unit": "jest --verbose src/food",
     "test:food:e2e": "prisma migrate deploy && USE_MOCK_OPENAI=true jest --verbose --config ./test/jest-e2e.json --runInBand --testPathPattern=food",
-    "test:food:real": "prisma migrate deploy && USE_MOCK_OPENAI=false jest --verbose --config ./test/jest-e2e.json --runInBand --testPathPattern=food"
+    "test:food:real": "prisma migrate deploy && USE_MOCK_OPENAI=false jest --verbose --config ./test/jest-e2e.json --runInBand --testPathPattern=food",
+    "docs": "ts-node -r tsconfig-paths/register generate-docs.ts",
+    "docs:open": "pnpm run docs && open docs/index.html",
+    "db:seed": "prisma db seed",
+    "db:reset": "prisma migrate reset --force && prisma db seed"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.614.0",
@@ -45,7 +49,7 @@
     "@willsoto/nestjs-prometheus": "^6.0.1",
     "aws-sdk": "^2.1659.0",
     "axios": "^1.7.2",
-    "bcrypt": "^5.1.1",
+    "bcrypt": "^6.0.0",
     "bcryptjs": "^2.4.3",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
@@ -95,6 +99,9 @@
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.5.2"
+  },
+  "prisma": {
+    "seed": "ts-node --transpile-only prisma/seed.ts"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
